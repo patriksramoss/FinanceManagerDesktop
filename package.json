@@ -2,14 +2,25 @@
   "name": "financemanagerdesktop",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "./backend/dist/index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "dev": "concurrently \"npm run dev-frontend\" \"npm run dev-backend\"",
+    "dev-frontend": "cd frontend && npm run dev",
+    "dev-backend": "electron ./backend/dist/index.js",
+    "build": "npm run build-frontend && npm run build-backend",
+    "build-frontend": "cd frontend && npm run build",
+    "build-backend": "tsc",
+    "start": "npm run build && electron ./backend/dist/index.js"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
   "dependencies": {
     "electron": "^35.1.2"
-  }
+  },
+  "devDependencies": {
+    "@types/electron": "^1.4.10",
+    "@types/node": "^16.9.1",
+    "concurrently": "^9.1.2",
+    "typescript": "^4.5.5"
+  },
+  "author": "",
+  "license": "ISC"
 }
