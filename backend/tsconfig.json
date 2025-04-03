@@ -2,10 +2,10 @@
   "compilerOptions": {
     "target": "ES6",
     "module": "CommonJS",
-    "outDir": "./backend/dist",
-    "rootDir": "./backend",
+    "outDir": "./dist",
+    "rootDir": "./src",
     "strict": true,
     "esModuleInterop": true
   },
-  "include": ["backend/**/*"]
+  "include": ["src/**/*"]
 }
