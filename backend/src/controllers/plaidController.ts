@@ -13,11 +13,12 @@ import { AxiosError } from "axios";
 const clientId = process.env.PLAID_CLIENT_ID;
 const secret = process.env.PLAID_SECRET;
 
-// if (!clientId || !secret) {
-//   throw new Error(
-//     "Missing Plaid client ID or secret in environment variables."
-//   );
-// }
+// Validate environment variables
+if (!clientId || !secret) {
+  throw new Error(
+    "Plaid client ID or secret is missing in the environment variables."
+  );
+}
 
 // Initialize Plaid API Client
 const configuration = new Configuration({
@@ -32,6 +33,7 @@ const configuration = new Configuration({
 
 const plaidClient = new PlaidApi(configuration);
 
+// Create Link Token
 export const createLinkToken = async (
   req: Request,
   res: Response
@@ -48,7 +50,6 @@ export const createLinkToken = async (
     };
 
     const response = await plaidClient.linkTokenCreate(request);
-
     res.json({ link_token: response.data.link_token });
   } catch (error: unknown) {
     const axiosError = error as AxiosError;
@@ -57,5 +58,124 @@ export const createLinkToken = async (
       axiosError.response?.data || axiosError.message || axiosError
     );
     res.status(500).json({ error: "Failed to create link token" });
+  }
+};
+
+export const exchangePublicToken = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
+  const { public_token } = req.body; // Expect the public_token from the frontend
+
+  if (!public_token) {
+    // If the public_token is missing, respond with a 400 status and return early.
+    res.status(400).json({
+      error: "Public token is required",
+      error_code: "MISSING_FIELDS",
+    });
+  }
+
+  try {
+    // Proceed only if the public_token is present.
+    const response = await plaidClient.itemPublicTokenExchange({
+      public_token: public_token,
+    });
+
+    const access_token = response.data.access_token;
+    const item_id = response.data.item_id;
+
+    // Send the response only once, after processing is successful.
+    res.json({ access_token, item_id });
+  } catch (error: any) {
+    // If an error occurs, log it and send a 500 status with the error details.
+    console.error("Error exchanging public token:", error);
+
+    // Handle Plaid-specific errors (e.g., missing required fields).
+    if (error.response?.data?.error_code) {
+      res.status(400).json({
+        error_message: error.response.data.error_message,
+        error_code: error.response.data.error_code,
+      });
+    }
+
+    // General error handling if Plaid returns an unknown error.
+    res.status(500).json({ error: "Failed to exchange public token" });
+  }
+};
+
+// Endpoint to get transactions
+export const getTransactions = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
+  const { access_token } = req.body;
+
+  // Check if access_token exists, return early if not
+  if (!access_token) {
+    res.status(400).json({ error: "Access token is required" });
+  }
+
+  try {
+    const response = await plaidClient.transactionsGet({
+      access_token: access_token,
+      start_date: "2022-01-01", // Specify the start date
+      end_date: "2022-12-31", // Specify the end date
+    });
+
+    const transactions = response.data.transactions;
+    res.json({ transactions });
+  } catch (error) {
+    console.error("Error fetching transactions:", error);
+    const axiosError = error as AxiosError;
+    res.status(500).json({
+      error: axiosError.response?.data || "Failed to fetch transactions",
+    });
+  }
+};
+
+// Function to get essential data from Plaid (accounts, identity, institution)
+export const getEssentialData = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
+  const { access_token } = req.body;
+
+  if (!access_token) {
+    res.status(400).json({ error: "Access token is required" });
+  }
+
+  try {
+    // Fetch accounts and balances
+    const accountsResponse = await plaidClient.accountsGet({
+      access_token: access_token,
+    });
+
+    // Fetch identity info
+    const identityResponse = await plaidClient.identityGet({
+      access_token: access_token,
+    });
+
+    const institutionResponse = await plaidClient.institutionsGet({
+      count: 10, // Adjust the count as necessary
+      offset: 0,
+      country_codes: [CountryCode.Lv],
+    });
+    const institution = institutionResponse.data.institutions;
+
+    // Aggregate data from Plaid responses
+    const data = {
+      accounts: accountsResponse.data.accounts,
+      identity: identityResponse.data,
+      institution: institution, // Use the first institution linked
+    };
+
+    // Send the aggregated data to the frontend
+    res.json(data);
+  } catch (error) {
+    const axiosError = error as AxiosError;
+    console.error("Error fetching Plaid data:", axiosError.response?.data);
+    res.status(500).json({
+      error: axiosError.response?.data || "Failed to fetch data from Plaid",
+    });
   }
 };
