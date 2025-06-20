@@ -1,4 +1,3 @@
-// backend/routes/plaidRoutes.ts
 import express from "express";
 import {
   createLinkToken,

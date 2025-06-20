@@ -8,10 +8,8 @@ app.use(cors());
 
 const port = process.env.PORT || 5000;
 
-// Use JSON middleware
 app.use(express.json());
 
-// Use Plaid routes
 app.use("/api/plaid", plaidRoutes);
 
 app.listen(port, () => {

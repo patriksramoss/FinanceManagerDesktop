@@ -1,32 +1,47 @@
-require("dotenv").config();
-import { app, BrowserWindow } from "electron";
+require("dotenv").config({ path: "../backend/.env", override: true });
+
+import { app, BrowserWindow, ipcMain } from "electron";
 import path from "path";
 import url from "url";
+import store from "./storage"; // <- You’ll create this file
+import fs from "fs";
 
 let mainWindow: BrowserWindow | null;
+
+const isDev = process.env.NODE_ENV === "development";
+const devHost = process.env.FRONTEND_HOST || "localhost";
+const devPort = process.env.FRONTEND_PORT || "5173";
 
 app.whenReady().then(() => {
   mainWindow = new BrowserWindow({
     width: 1200,
     height: 800,
     webPreferences: {
-      nodeIntegration: true,
-      contextIsolation: false, // Allow access to Node.js APIs
+      // for secure ipc
+      contextIsolation: true,
+      preload: path.join(__dirname, "preload.js"),
     },
   });
 
-  const devHost = process.env.FRONTEND_HOST || "localhost";
-  const devPort = process.env.FRONTEND_PORT || "5173";
+  ipcMain.handle("get-access-token", () => {
+    return store.get("plaidAccessToken");
+  });
 
-  // Load the correct frontend based on environment
-  const frontendURL =
-    process.env.NODE_ENV === "development"
-      ? `http://${devHost}:${devPort}`
-      : url.format({
-          pathname: path.join(app.getAppPath(), "../frontend/dist/index.html"),
-          protocol: "file:",
-          slashes: true,
-        });
+  ipcMain.handle("save-access-token", (_event, token: string) => {
+    store.set("plaidAccessToken", token);
+  });
+
+  ipcMain.handle("clear-access-token", async () => {
+    store.delete("plaidAccessToken");
+  });
+
+  const frontendURL = isDev
+    ? `http://${devHost}:${devPort}`
+    : url.format({
+        pathname: path.join(app.getAppPath(), "../frontend/dist/index.html"),
+        protocol: "file:",
+        slashes: true,
+      });
 
   console.log("Loading frontend from:", frontendURL);
 

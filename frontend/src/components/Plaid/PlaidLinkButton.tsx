@@ -6,6 +6,8 @@ import {
   PlaidLinkOnSuccessMetadata,
   PlaidLinkOnEventMetadata,
 } from "react-plaid-link";
+const backendUrl = import.meta.env.VITE_BACKEND_URL;
+import Store from "src/Store";
 
 interface PlaidLinkButtonProps {
   onSuccess: (
@@ -17,45 +19,26 @@ interface PlaidLinkButtonProps {
 const PlaidLinkButton: React.FC<PlaidLinkButtonProps> = ({ onSuccess }) => {
   const [token, setToken] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
-  const [fetchError, setFetchError] = useState<string | null>(null); // For handling token fetch errors
+  const [fetchError, setFetchError] = useState<string | null>(null);
 
-  // Plaid Link configuration
+  if (!backendUrl) {
+    throw new Error("VITE_BACKEND_URL is not defined in .env");
+  }
+
   const config: PlaidLinkOptionsWithLinkToken = {
-    token: token!, // Token for linking
+    token: token!,
     onSuccess: async (
       public_token: string,
       metadata: PlaidLinkOnSuccessMetadata
     ) => {
       console.log("Public Token:", public_token);
       console.log("Metadata:", metadata);
-
-      // Exchange public token for access token
       try {
-        const response = await fetch(
-          "http://localhost:5000/api/plaid/exchange-public-token",
-          {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({ public_token }),
-          }
-        );
-        const data = await response.json();
-
-        if (response.ok) {
-          console.log("Access Token:", data.access_token);
-          console.log("Item ID:", data.item_id);
-
-          // Pass the access token to the onSuccess callback
-          onSuccess(data.access_token, metadata);
-        } else {
-          console.error("Failed to exchange public token:", data.error);
-          setFetchError(data.error || "Unknown error");
-        }
-      } catch (error) {
-        console.error("Error sending public token to backend:", error);
-        setFetchError("Error exchanging public token with the backend.");
+        const accessToken = await Store.getAccessToken(public_token);
+        onSuccess(accessToken, metadata);
+      } catch (err) {
+        console.error("Token exchange error:", err);
+        setFetchError("Error exchanging token");
       }
     },
     onExit: (error: PlaidLinkError | null) => {
@@ -70,18 +53,16 @@ const PlaidLinkButton: React.FC<PlaidLinkButtonProps> = ({ onSuccess }) => {
     },
   };
 
-  // Plaid Link hook to manage linking
   const { open, ready, error } = usePlaidLink(config);
 
-  // Fetch link token on component mount
   useEffect(() => {
     const fetchLinkToken = async () => {
-      setLoading(true); // Start loading when we fetch the token
-      setFetchError(null); // Reset any previous errors
+      setLoading(true);
+      setFetchError(null);
 
       try {
         const response = await fetch(
-          "http://localhost:5000/api/plaid/create-link-token"
+          `${backendUrl}/api/plaid/create-link-token`
         );
         if (!response.ok) {
           throw new Error(`HTTP error! Status: ${response.status}`);
@@ -92,7 +73,7 @@ const PlaidLinkButton: React.FC<PlaidLinkButtonProps> = ({ onSuccess }) => {
         console.error("Error fetching link token:", err);
         setFetchError("Error fetching the link token from the backend.");
       } finally {
-        setLoading(false); // Stop loading after token fetch attempt
+        setLoading(false);
       }
     };
 

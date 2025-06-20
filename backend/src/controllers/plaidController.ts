@@ -8,19 +8,17 @@ import {
   CountryCode,
 } from "plaid";
 import { AxiosError } from "axios";
+import moment from "moment";
 
-// Ensure that environment variables are available
 const clientId = process.env.PLAID_CLIENT_ID;
 const secret = process.env.PLAID_SECRET;
 
-// Validate environment variables
 if (!clientId || !secret) {
   throw new Error(
     "Plaid client ID or secret is missing in the environment variables."
   );
 }
 
-// Initialize Plaid API Client
 const configuration = new Configuration({
   basePath: "https://sandbox.plaid.com", // For sandbox environment, use other URLs for production
   baseOptions: {
@@ -33,7 +31,6 @@ const configuration = new Configuration({
 
 const plaidClient = new PlaidApi(configuration);
 
-// Create Link Token
 export const createLinkToken = async (
   req: Request,
   res: Response
@@ -103,7 +100,6 @@ export const exchangePublicToken = async (
   }
 };
 
-// Endpoint to get transactions
 export const getTransactions = async (
   req: Request,
   res: Response
@@ -133,43 +129,50 @@ export const getTransactions = async (
   }
 };
 
-// Function to get essential data from Plaid (accounts, identity, institution)
 export const getEssentialData = async (
   req: Request,
   res: Response
 ): Promise<void> => {
-  const { access_token } = req.body;
+  console.log("GET ESSENTIAL DATA", req.body);
+  const { access_token, month } = req.body;
 
   if (!access_token) {
     res.status(400).json({ error: "Access token is required" });
   }
 
   try {
-    // Fetch accounts and balances
+    const monthToUse = month || moment().format("YYYY-MM");
+    const startDate = moment(monthToUse, "YYYY-MM")
+      .startOf("month")
+      .format("YYYY-MM-DD");
+    const endDate = moment(monthToUse, "YYYY-MM")
+      .endOf("month")
+      .format("YYYY-MM-DD");
+
     const accountsResponse = await plaidClient.accountsGet({
       access_token: access_token,
     });
 
-    // Fetch identity info
     const identityResponse = await plaidClient.identityGet({
       access_token: access_token,
     });
 
-    const institutionResponse = await plaidClient.institutionsGet({
-      count: 10, // Adjust the count as necessary
-      offset: 0,
-      country_codes: [CountryCode.Lv],
+    const transactionsResponse = await plaidClient.transactionsGet({
+      access_token: access_token,
+      start_date: startDate,
+      end_date: endDate,
+      options: {
+        count: 500,
+        offset: 0,
+      },
     });
-    const institution = institutionResponse.data.institutions;
 
-    // Aggregate data from Plaid responses
     const data = {
       accounts: accountsResponse.data.accounts,
       identity: identityResponse.data,
-      institution: institution, // Use the first institution linked
+      transactions: transactionsResponse.data.transactions,
     };
 
-    // Send the aggregated data to the frontend
     res.json(data);
   } catch (error) {
     const axiosError = error as AxiosError;

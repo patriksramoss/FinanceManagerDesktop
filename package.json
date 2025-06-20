@@ -8,7 +8,9 @@
     "fe": "cd frontend && npm run dev",
     "be": "cd backend && npm run dev",
     "electron": "cd electron && npm run dev",
-    "start": "concurrently \"npm run fe\" \"npm run be\" \"npm run electron\""
+    "start": "concurrently \"npm run fe\" \"npm run be\" \"npm run electron\"",
+    "node": "nvm use 20.5.0",
+    "npm-install-packages": "cd frontend && npm i && cd ../backend && npm i && cd ../electron && npm i"
   },
   "build": {
     "appId": "com.patriks.finance-manager",
