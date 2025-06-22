@@ -60,6 +60,11 @@ const PlaidLinkButton: React.FC<PlaidLinkButtonProps> = ({ onSuccess }) => {
       setLoading(true);
       setFetchError(null);
 
+      console.log(
+        "BACKEND URL FETCH LINK TOKEN",
+        `${backendUrl}/api/plaid/create-link-token`
+      );
+
       try {
         const response = await fetch(
           `${backendUrl}/api/plaid/create-link-token`
