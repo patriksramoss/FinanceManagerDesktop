@@ -5,4 +5,4 @@ A finance management app for Windows, Linux and MacOS that uses Plaid services t
 # How to run
 
 1. npm run npm-install-packages
-2. npm run start
+2. npm run start (or be, fe and electron)
