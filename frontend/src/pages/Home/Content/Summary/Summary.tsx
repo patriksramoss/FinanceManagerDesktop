@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import styles from "./Summary.module.scss";
-import Store from "src/Store";
+import useAuthStore from "src/stores/Auth";
 import {
   PieChart,
   Pie,
@@ -10,6 +10,7 @@ import {
   ResponsiveContainer,
 } from "recharts";
 import dayjs from "dayjs";
+import Loader from "src/components/Loader/Loader";
 
 const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
@@ -26,7 +27,7 @@ const COLORS = [
 
 const Summary = () => {
   const [essentialData, setEssentialData] = useState<any>(null);
-  const [accessToken, setAccessToken] = useState<string | null>(null);
+  const loadAccessToken = useAuthStore((state) => state.loadAccessToken);
   const [selectedMonth, setSelectedMonth] = useState<string>(
     dayjs().format("YYYY-MM")
   );
@@ -34,13 +35,11 @@ const Summary = () => {
 
   useEffect(() => {
     const fetchTokenAndData = async () => {
-      const token = await Store.getCachedAccessToken();
+      const token = await loadAccessToken();
       if (!token) {
         console.warn("No cached access token found.");
         return;
       }
-
-      setAccessToken(token);
 
       try {
         const response = await fetch(
@@ -122,7 +121,7 @@ const Summary = () => {
     setSelectedMonth(newDate.format("YYYY-MM"));
   };
 
-  if (!essentialData) return <p>Loading essential data...</p>;
+  if (!essentialData) return <Loader loading={true} />;
 
   return (
     <div className={styles["essential-data"]}>

@@ -20,7 +20,7 @@ if (!clientId || !secret) {
 }
 
 const configuration = new Configuration({
-  basePath: "https://sandbox.plaid.com", // For sandbox environment, use other URLs for production
+  basePath: "https://sandbox.plaid.com",
   baseOptions: {
     headers: {
       "PLAID-CLIENT-ID": clientId,
@@ -38,7 +38,7 @@ export const createLinkToken = async (
   try {
     const request: LinkTokenCreateRequest = {
       user: {
-        client_user_id: "user123", // Replace with dynamic user ID if necessary
+        client_user_id: "user123",
       },
       client_name: "Finance Manager",
       products: [Products.Transactions],
@@ -62,10 +62,9 @@ export const exchangePublicToken = async (
   req: Request,
   res: Response
 ): Promise<void> => {
-  const { public_token } = req.body; // Expect the public_token from the frontend
+  const { public_token } = req.body;
 
   if (!public_token) {
-    // If the public_token is missing, respond with a 400 status and return early.
     res.status(400).json({
       error: "Public token is required",
       error_code: "MISSING_FIELDS",
@@ -73,7 +72,6 @@ export const exchangePublicToken = async (
   }
 
   try {
-    // Proceed only if the public_token is present.
     const response = await plaidClient.itemPublicTokenExchange({
       public_token: public_token,
     });
@@ -81,13 +79,10 @@ export const exchangePublicToken = async (
     const access_token = response.data.access_token;
     const item_id = response.data.item_id;
 
-    // Send the response only once, after processing is successful.
     res.json({ access_token, item_id });
   } catch (error: any) {
-    // If an error occurs, log it and send a 500 status with the error details.
     console.error("Error exchanging public token:", error);
 
-    // Handle Plaid-specific errors (e.g., missing required fields).
     if (error.response?.data?.error_code) {
       res.status(400).json({
         error_message: error.response.data.error_message,
@@ -95,7 +90,6 @@ export const exchangePublicToken = async (
       });
     }
 
-    // General error handling if Plaid returns an unknown error.
     res.status(500).json({ error: "Failed to exchange public token" });
   }
 };
@@ -106,7 +100,6 @@ export const getTransactions = async (
 ): Promise<void> => {
   const { access_token } = req.body;
 
-  // Check if access_token exists, return early if not
   if (!access_token) {
     res.status(400).json({ error: "Access token is required" });
   }
@@ -114,8 +107,8 @@ export const getTransactions = async (
   try {
     const response = await plaidClient.transactionsGet({
       access_token: access_token,
-      start_date: "2022-01-01", // Specify the start date
-      end_date: "2022-12-31", // Specify the end date
+      start_date: "2022-01-01",
+      end_date: "2022-12-31",
     });
 
     const transactions = response.data.transactions;

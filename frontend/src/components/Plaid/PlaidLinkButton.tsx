@@ -7,7 +7,8 @@ import {
   PlaidLinkOnEventMetadata,
 } from "react-plaid-link";
 const backendUrl = import.meta.env.VITE_BACKEND_URL;
-import Store from "src/Store";
+import Store from "src/stores/Plaid";
+import Loader from "src/components/Loader/Loader";
 
 interface PlaidLinkButtonProps {
   onSuccess: (
@@ -87,12 +88,13 @@ const PlaidLinkButton: React.FC<PlaidLinkButtonProps> = ({ onSuccess }) => {
 
   return (
     <div>
-      {loading && <p>Loading Plaid...</p>}
+      <Loader loading={loading} />
       {!loading && fetchError && <div className="error">{fetchError}</div>}
-
-      <button onClick={() => open()} disabled={!ready || loading}>
-        Connect with Plaid
-      </button>
+      {!loading && !fetchError && (
+        <button onClick={() => open()} disabled={!ready || loading}>
+          Connect with Plaid
+        </button>
+      )}
       {error && <div className="error">Error: {error.message}</div>}
     </div>
   );

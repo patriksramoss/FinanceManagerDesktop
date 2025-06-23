@@ -1,42 +1,19 @@
 import { useState, useEffect } from "react";
 import styles from "./EssentialData.module.scss";
-import Store from "src/Store";
-import {
-  PieChart,
-  Pie,
-  Cell,
-  Tooltip,
-  Legend,
-  ResponsiveContainer,
-} from "recharts";
-import dayjs from "dayjs";
-
 const backendUrl = import.meta.env.VITE_BACKEND_URL;
-
-const COLORS = [
-  "#8884d8",
-  "#82ca9d",
-  "#ffc658",
-  "#ff7f50",
-  "#8dd1e1",
-  "#d0ed57",
-  "#a4de6c",
-  "#d88884",
-];
+import useAuthStore from "src/stores/Auth";
+import Loader from "src/components/Loader/Loader";
 
 const EssentialData = () => {
   const [essentialData, setEssentialData] = useState<any>(null);
-  const [accessToken, setAccessToken] = useState<string | null>(null);
-
+  const loadAccessToken = useAuthStore((state) => state.loadAccessToken);
   useEffect(() => {
     const fetchTokenAndData = async () => {
-      const token = await Store.getCachedAccessToken();
+      const token = await loadAccessToken();
       if (!token) {
         console.warn("No cached access token found.");
         return;
       }
-
-      setAccessToken(token);
 
       try {
         const response = await fetch(
@@ -67,7 +44,7 @@ const EssentialData = () => {
     fetchTokenAndData();
   }, []);
 
-  if (!essentialData) return <p>Loading essential data...</p>;
+  if (!essentialData) return <Loader loading={true} />;
 
   return (
     <div className={styles["essential-data"]}>
