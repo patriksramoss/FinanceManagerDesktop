@@ -126,7 +126,6 @@ export const getEssentialData = async (
   req: Request,
   res: Response
 ): Promise<void> => {
-  console.log("GET ESSENTIAL DATA", req.body);
   const { access_token, month } = req.body;
 
   if (!access_token) {
