@@ -14,6 +14,7 @@ const Accounts: React.FC = () => {
         console.warn("No cached access token found.");
         return;
       }
+      console.log("222222222222");
 
       try {
         const response = await fetch(

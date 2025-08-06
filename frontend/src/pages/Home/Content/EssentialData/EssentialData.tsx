@@ -14,6 +14,7 @@ const EssentialData = () => {
         console.warn("No cached access token found.");
         return;
       }
+      console.log("333333333333");
 
       try {
         const response = await fetch(

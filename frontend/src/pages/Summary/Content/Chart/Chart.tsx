@@ -40,6 +40,7 @@ const Chart = () => {
         console.warn("No cached access token found.");
         return;
       }
+      console.log("55555555555555");
 
       try {
         const response = await fetch(

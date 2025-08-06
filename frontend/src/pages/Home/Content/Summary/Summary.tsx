@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
 import styles from "./Summary.module.scss";
-import useAuthStore from "src/stores/Auth";
 import {
   PieChart,
   Pie,
@@ -12,7 +11,8 @@ import {
 import dayjs from "dayjs";
 import Loader from "src/components/Loader/Loader";
 
-const backendUrl = import.meta.env.VITE_BACKEND_URL;
+//apis
+import { getEssentialData } from "src/api/plaid";
 
 const COLORS = [
   "#8884d8",
@@ -27,50 +27,25 @@ const COLORS = [
 
 const Summary = () => {
   const [essentialData, setEssentialData] = useState<any>(null);
-  const loadAccessToken = useAuthStore((state) => state.loadAccessToken);
   const [selectedMonth, setSelectedMonth] = useState<string>(
     dayjs().format("YYYY-MM")
   );
   const [categorizedData, setCategorizedData] = useState<any[]>([]);
 
-  useEffect(() => {
-    const fetchTokenAndData = async () => {
-      const token = await loadAccessToken();
-      if (!token) {
-        console.warn("No cached access token found.");
-        return;
-      }
-
-      try {
-        const response = await fetch(
-          `${backendUrl}/api/plaid/get-essential-data`,
-          {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${token}`,
-            },
-            body: JSON.stringify({
-              access_token: token,
-              month: selectedMonth,
-            }),
-          }
-        );
-
-        if (!response.ok) throw new Error(`Status ${response.status}`);
-
-        const data = await response.json();
-        console.log("datadatadatadata", data);
-
-        setEssentialData(data);
-        processCategoryData(data.transactions, selectedMonth);
-      } catch (error) {
-        console.error("Error fetching essential data:", error);
-      }
-    };
-
-    fetchTokenAndData();
-  }, []);
+  // useEffect(() => {
+  //   const fetchTokenAndData = async () => {
+  //     try {
+  //       console.log("111111");
+  //       const data = await getEssentialData(selectedMonth);
+  //       if (!data) return;
+  //       setEssentialData(data);
+  //       processCategoryData(data.transactions, selectedMonth);
+  //     } catch (err) {
+  //       console.error("Error fetching essential data:", err);
+  //     }
+  //   };
+  //   fetchTokenAndData();
+  // }, []);
 
   useEffect(() => {
     if (essentialData?.transactions) {

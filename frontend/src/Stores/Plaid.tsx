@@ -1,9 +1,31 @@
 import axios from "axios";
-
+import { create } from "zustand";
+import { EssentialData } from "src/api/plaid/types";
 const backendUrl = import.meta.env.VITE_BACKEND_URL;
+
 let accessToken: string | null = null;
 
-const getCachedAccessToken = async (): Promise<string | null> => {
+interface PlaidStore {
+  cache: Record<string, EssentialData>;
+  getEssentialData: (month: string) => EssentialData | undefined;
+  setEssentialData: (month: string, data: EssentialData) => void;
+  clearCache: () => void;
+}
+
+const usePlaidStore = create<PlaidStore>((set, get) => ({
+  cache: {},
+  getEssentialData: (month) => get().cache[month],
+  setEssentialData: (month, data) =>
+    set((state) => ({
+      cache: {
+        ...state.cache,
+        [month]: data,
+      },
+    })),
+  clearCache: () => set({ cache: {} }),
+}));
+
+export const getCachedAccessToken = async (): Promise<string | null> => {
   if (accessToken) return accessToken;
 
   // @ts-ignore: window.electronAPI is injected via preload
@@ -15,8 +37,7 @@ const getCachedAccessToken = async (): Promise<string | null> => {
 
   return null;
 };
-
-const getAccessToken = async (publicToken: string): Promise<string> => {
+export const getAccessToken = async (publicToken: string): Promise<string> => {
   if (accessToken) return accessToken;
 
   const stored = await getCachedAccessToken();
@@ -39,14 +60,10 @@ const getAccessToken = async (publicToken: string): Promise<string> => {
   return newAccessToken;
 };
 
-const clearAccessToken = async () => {
+export const clearAccessToken = async () => {
   // @ts-ignore
   await window.electronAPI.clearAccessToken();
   accessToken = null;
 };
 
-export default {
-  getAccessToken,
-  getCachedAccessToken,
-  clearAccessToken,
-};
+export default usePlaidStore;

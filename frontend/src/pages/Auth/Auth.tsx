@@ -1,6 +1,6 @@
 import React from "react";
 import PlaidLinkButton from "src/components/Plaid/PlaidLinkButton";
-import Store from "src/stores/Plaid";
+import { getAccessToken } from "src/stores/Plaid";
 import useAuthStore from "src/stores/Auth";
 import styles from "./Auth.module.scss";
 import logoImg from "src/assets/images/logo.png";
@@ -9,7 +9,7 @@ const Auth: React.FC = () => {
   const setAccessToken = useAuthStore((state) => state.setAccessToken);
 
   const handleSuccess = async (publicToken: string) => {
-    const token = await Store.getAccessToken(publicToken);
+    const token = await getAccessToken(publicToken);
     setAccessToken(token);
   };
 

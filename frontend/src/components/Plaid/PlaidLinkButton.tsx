@@ -7,7 +7,7 @@ import {
   PlaidLinkOnEventMetadata,
 } from "react-plaid-link";
 const backendUrl = import.meta.env.VITE_BACKEND_URL;
-import Store from "src/stores/Plaid";
+import { getAccessToken } from "src/stores/Plaid";
 import Loader from "src/components/Loader/Loader";
 
 interface PlaidLinkButtonProps {
@@ -35,7 +35,7 @@ const PlaidLinkButton: React.FC<PlaidLinkButtonProps> = ({ onSuccess }) => {
       console.log("Public Token:", public_token);
       console.log("Metadata:", metadata);
       try {
-        const accessToken = await Store.getAccessToken(public_token);
+        const accessToken = await getAccessToken(public_token);
         onSuccess(accessToken, metadata);
       } catch (err) {
         console.error("Token exchange error:", err);

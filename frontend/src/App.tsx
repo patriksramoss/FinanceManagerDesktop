@@ -1,19 +1,13 @@
 import React, { useEffect } from "react";
-import {
-  BrowserRouter as Router,
-  Routes,
-  Route,
-  useNavigate,
-} from "react-router-dom";
+import { Routes, Route, useNavigate } from "react-router-dom";
 import Auth from "./pages/Auth/Auth";
-import Home from "./pages/Home/Home";
 import Summary from "./pages/Summary/Summary";
 import Identity from "./pages/Identity/Identity";
 import Accounts from "./pages/Accounts/Accounts";
 
 import useAuthStore from "./stores/Auth";
 import Navbar from "src/components/Navbar/Navbar";
-import Store from "src/stores/Plaid";
+import { getCachedAccessToken } from "src/stores/Plaid";
 // styles
 import "./styles/Global.scss";
 
@@ -25,7 +19,7 @@ const App: React.FC = () => {
   const setAccessToken = useAuthStore((state) => state.setAccessToken);
 
   useEffect(() => {
-    Store.getCachedAccessToken().then((token) => {
+    getCachedAccessToken().then((token: string | null) => {
       if (token) setAccessToken(token);
     });
   }, []);

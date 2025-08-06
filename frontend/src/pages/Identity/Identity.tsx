@@ -14,6 +14,7 @@ const Identity: React.FC = () => {
         console.warn("No cached access token found.");
         return;
       }
+      console.log("4444444444444");
 
       try {
         const response = await fetch(
