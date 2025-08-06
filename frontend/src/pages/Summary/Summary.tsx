@@ -1,12 +1,12 @@
 import React from "react";
-import Summary from "./Content/Summary/Summary";
-import styles from "./Home.module.scss";
+import Chart from "./Content/Chart/Chart";
+import styles from "./Summary.module.scss";
 
 const Home: React.FC = () => {
   return (
     <div className={styles.homeContainer}>
       <div className={styles.flexBox}>
-        <Summary />
+        <Chart />
       </div>
     </div>
   );

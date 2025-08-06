@@ -2,6 +2,10 @@ import React, { useEffect } from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Auth from "./pages/Auth/Auth";
 import Home from "./pages/Home/Home";
+import Summary from "./pages/Summary/Summary";
+import Identity from "./pages/Identity/Identity";
+import Accounts from "./pages/Accounts/Accounts";
+
 import useAuthStore from "./stores/Auth";
 import Navbar from "src/components/Navbar/Navbar";
 import Store from "src/stores/Plaid";
@@ -26,10 +30,23 @@ const App: React.FC = () => {
 
   return (
     <Router>
-      <Navbar onLogout={handleLogout} isAuthenticated={isAuthenticated} />
+      {isAuthenticated && <Navbar onLogout={handleLogout} />}
       <Routes>
-        <Route path="/" element={isAuthenticated ? <Home /> : <Auth />} />
+        <Route path="/" element={isAuthenticated ? <Summary /> : <Auth />} />
       </Routes>
+      {isAuthenticated && (
+        <>
+          <Routes>
+            <Route path="/summary" element={<Summary />} />
+          </Routes>
+          <Routes>
+            <Route path="/accounts" element={<Accounts />} />
+          </Routes>
+          <Routes>
+            <Route path="/identity" element={<Identity />} />
+          </Routes>
+        </>
+      )}
     </Router>
   );
 };

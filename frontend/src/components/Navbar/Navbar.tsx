@@ -1,26 +1,53 @@
 import React from "react";
 import styles from "./Navbar.module.scss";
+import { NavLink } from "react-router-dom";
 import { RiLogoutBoxLine } from "react-icons/ri";
+import logoImg from "src/assets/images/logo.png";
 
 interface NavbarProps {
   onLogout: () => void;
-  isAuthenticated: boolean;
 }
 
-const Navbar: React.FC<NavbarProps> = ({ onLogout, isAuthenticated }) => {
+const Navbar: React.FC<NavbarProps> = ({ onLogout }) => {
   return (
-    <nav className={styles.navbar}>
+    <div className={styles.navbarContainer}>
       <div className={styles.logoWrapper}>
-        <div className={styles.logo}>FOM</div>
-        <div className={styles.logoSubtext}>Finance Only Management</div>
+        <img src={logoImg} alt="Logo" className={styles.logo} />
       </div>
-
-      {isAuthenticated && (
-        <button className={styles.logoutButton} onClick={onLogout}>
-          <RiLogoutBoxLine /> Logout
-        </button>
-      )}
-    </nav>
+      <>
+        <nav className={styles.navbar}>
+          <NavLink
+            to="/summary"
+            className={({ isActive }) =>
+              `${styles.navItem} ${isActive ? styles.active : ""}`
+            }
+          >
+            Summary
+          </NavLink>
+          <NavLink
+            to="/accounts"
+            className={({ isActive }) =>
+              `${styles.navItem} ${isActive ? styles.active : ""}`
+            }
+          >
+            Accounts
+          </NavLink>
+          <NavLink
+            to="/identity"
+            className={({ isActive }) =>
+              `${styles.navItem} ${isActive ? styles.active : ""}`
+            }
+          >
+            Identity
+          </NavLink>
+        </nav>
+        <div className={styles.logoutButtonWrapper}>
+          <button className={styles.logoutButton} onClick={onLogout}>
+            <RiLogoutBoxLine /> Logout
+          </button>
+        </div>
+      </>
+    </div>
   );
 };
 

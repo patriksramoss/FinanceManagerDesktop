@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import styles from "./Summary.module.scss";
+import styles from "./Chart.module.scss";
 import useAuthStore from "src/stores/Auth";
 import {
   PieChart,
@@ -25,7 +25,7 @@ const COLORS = [
   "#d88884",
 ];
 
-const Summary = () => {
+const Chart = () => {
   const [essentialData, setEssentialData] = useState<any>(null);
   const loadAccessToken = useAuthStore((state) => state.loadAccessToken);
   const [selectedMonth, setSelectedMonth] = useState<string>(
@@ -121,7 +121,12 @@ const Summary = () => {
     setSelectedMonth(newDate.format("YYYY-MM"));
   };
 
-  if (!essentialData) return <Loader loading={true} />;
+  if (!essentialData)
+    return (
+      <div className={styles["essential-data"]}>
+        <Loader loading={true} />
+      </div>
+    );
 
   return (
     <div className={styles["essential-data"]}>
@@ -161,4 +166,4 @@ const Summary = () => {
   );
 };
 
-export default Summary;
+export default Chart;

@@ -1,8 +1,20 @@
-$color-primary: #1e3a8a;
-$color-accent: #3b82f6;
-$color-danger: #ef4444;
-$color-bg: #f9fafb;
-$color-bg2: #a6aab1;
+$color-primary: linear-gradient(90deg, #eceff4, #dee3ea, #d1d7df);
+$color-accent: linear-gradient(
+  90deg,
+  rgb(254, 38, 92),
+  #e73e3e,
+  rgb(221, 49, 49)
+);
+$color-danger: linear-gradient(90deg, #fe5d26ff, #e73e3e, rgb(221, 112, 49));
+$color-danger-2: linear-gradient(
+  90deg,
+  rgb(254, 63, 38),
+  #e71d1d,
+  rgb(243, 69, 26)
+);
+$color-bg: linear-gradient(90deg, #ffffff, #f9fafb, #f0f2f5);
+$color-bg2: linear-gradient(90deg, #f0f2f5, #e7eaee, #dee2e7);
+
 $color-text: #111827;
 $color-text-white: #edeef0;
 
@@ -16,4 +28,4 @@ $radius-sm: 4px;
 $radius-md: 8px;
 $radius-lg: 16px;
 
-$box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+$box-shadow: 0 2px 4px rgba(0, 0, 0, 0.4);

@@ -1,8 +1,9 @@
-body {
+#root {
+  width: 100%;
   font-family: -apple-system, BlinkMacSystemFont, "Roboto", sans-serif;
-  display: flex;
-  justify-content: center;
-  align-items: center;
+}
+
+body {
   height: 100vh;
-  background-color: $color-bg;
+  background: $color-bg;
 }
