@@ -1,5 +1,10 @@
 import React, { useEffect } from "react";
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  useNavigate,
+} from "react-router-dom";
 import Auth from "./pages/Auth/Auth";
 import Home from "./pages/Home/Home";
 import Summary from "./pages/Summary/Summary";
@@ -13,6 +18,7 @@ import Store from "src/stores/Plaid";
 import "./styles/Global.scss";
 
 const App: React.FC = () => {
+  const navigate = useNavigate();
   const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
   // const loadAccessToken = useAuthStore((state) => state.loadAccessToken);
   const clearAccessToken = useAuthStore((state) => state.clearAccessToken);
@@ -26,10 +32,11 @@ const App: React.FC = () => {
 
   const handleLogout = async () => {
     await clearAccessToken();
+    navigate("/");
   };
 
   return (
-    <Router>
+    <>
       {isAuthenticated && <Navbar onLogout={handleLogout} />}
       <Routes>
         <Route path="/" element={isAuthenticated ? <Summary /> : <Auth />} />
@@ -47,7 +54,7 @@ const App: React.FC = () => {
           </Routes>
         </>
       )}
-    </Router>
+    </>
   );
 };
 
