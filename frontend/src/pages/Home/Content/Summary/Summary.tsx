@@ -32,20 +32,21 @@ const Summary = () => {
   );
   const [categorizedData, setCategorizedData] = useState<any[]>([]);
 
-  // useEffect(() => {
-  //   const fetchTokenAndData = async () => {
-  //     try {
-  //       console.log("111111");
-  //       const data = await getEssentialData(selectedMonth);
-  //       if (!data) return;
-  //       setEssentialData(data);
-  //       processCategoryData(data.transactions, selectedMonth);
-  //     } catch (err) {
-  //       console.error("Error fetching essential data:", err);
-  //     }
-  //   };
-  //   fetchTokenAndData();
-  // }, []);
+  const fetchTokenAndData = async () => {
+    console.log("fetchTokenAndData", selectedMonth);
+    try {
+      const data = await getEssentialData(selectedMonth);
+      if (!data) return;
+      setEssentialData(data);
+      processCategoryData(data.transactions, selectedMonth);
+    } catch (err) {
+      console.error("Error fetching essential data:", err);
+    }
+  };
+
+  useEffect(() => {
+    fetchTokenAndData();
+  }, []);
 
   useEffect(() => {
     if (essentialData?.transactions) {
@@ -94,6 +95,7 @@ const Summary = () => {
         ? current.subtract(1, "month")
         : current.add(1, "month");
     setSelectedMonth(newDate.format("YYYY-MM"));
+    fetchTokenAndData();
   };
 
   if (!essentialData) return <Loader loading={true} />;

@@ -15,17 +15,24 @@
   "build": {
     "appId": "com.patriks.finance-manager",
     "productName": "FinanceManager",
+    "files": [
+      "frontend/dist/**",
+      "electron/assets/**"
+    ],
     "directories": {
       "output": "build"
     },
     "mac": {
-      "category": "public.app-category.finance"
+      "category": "public.app-category.finance",
+      "icon": "electron/assets/logo.ico"
     },
     "win": {
-      "target": "nsis"
+      "target": "nsis",
+      "icon": "electron/assets/logo.ico"
     },
     "linux": {
-      "target": "AppImage"
+      "target": "AppImage",
+      "icon": "electron/assets/logo.ico"
     }
   },
   "devDependencies": {

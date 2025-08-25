@@ -11,8 +11,8 @@ import {
 } from "recharts";
 import dayjs from "dayjs";
 import Loader from "src/components/Loader/Loader";
-
-const backendUrl = import.meta.env.VITE_BACKEND_URL;
+//apis
+import { getEssentialData } from "src/api/plaid";
 
 const COLORS = [
   "#8884d8",
@@ -27,56 +27,44 @@ const COLORS = [
 
 const Chart = () => {
   const [essentialData, setEssentialData] = useState<any>(null);
+  const [loadingChartData, setLoadingChartData] = useState<boolean>(false);
   const loadAccessToken = useAuthStore((state) => state.loadAccessToken);
   const [selectedMonth, setSelectedMonth] = useState<string>(
     dayjs().format("YYYY-MM")
   );
   const [categorizedData, setCategorizedData] = useState<any[]>([]);
 
-  useEffect(() => {
-    const fetchTokenAndData = async () => {
-      const token = await loadAccessToken();
-      if (!token) {
-        console.warn("No cached access token found.");
+  const fetchTokenAndData = async () => {
+    const token = await loadAccessToken();
+    if (!token) {
+      console.warn("No cached access token found.");
+      return;
+    }
+    try {
+      console.log("FETCVHING ESSENTIAL DATA", selectedMonth);
+      setLoadingChartData(true);
+      const data = await getEssentialData(selectedMonth);
+      if (!data) {
+        setLoadingChartData(false);
         return;
       }
-      console.log("55555555555555");
+      console.log("SETTING ESSENTIAL DATA", data);
+      setLoadingChartData(false);
+      setEssentialData(data);
+      processCategoryData(data.transactions, selectedMonth);
+    } catch (error) {
+      console.error("Error fetching essential data:", error);
+    }
+  };
 
-      try {
-        const response = await fetch(
-          `${backendUrl}/api/plaid/get-essential-data`,
-          {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${token}`,
-            },
-            body: JSON.stringify({
-              access_token: token,
-              month: selectedMonth,
-            }),
-          }
-        );
-
-        if (!response.ok) throw new Error(`Status ${response.status}`);
-
-        const data = await response.json();
-        console.log("datadatadatadata", data);
-
-        setEssentialData(data);
-        processCategoryData(data.transactions, selectedMonth);
-      } catch (error) {
-        console.error("Error fetching essential data:", error);
-      }
-    };
-
-    fetchTokenAndData();
-  }, []);
+  // useEffect(() => {
+  //   fetchTokenAndData();
+  // }, []);
 
   useEffect(() => {
-    if (essentialData?.transactions) {
-      processCategoryData(essentialData.transactions, selectedMonth);
-    }
+    console.log("CHANGING MONTHS", selectedMonth);
+    console.log("essentialData", essentialData);
+    fetchTokenAndData();
   }, [selectedMonth]);
 
   const processCategoryData = (transactions: any[], month: string) => {
@@ -122,6 +110,8 @@ const Chart = () => {
     setSelectedMonth(newDate.format("YYYY-MM"));
   };
 
+  console.log("essential data", essentialData);
+
   if (!essentialData)
     return (
       <div className={styles["essential-data"]}>
@@ -133,36 +123,48 @@ const Chart = () => {
     <div className={styles["essential-data"]}>
       <h2>Summary</h2>
 
-      <div className={styles.monthSwitcher}>
+      <div
+        className={`${styles.monthSwitcher} ${
+          loadingChartData ? styles.loading : ""
+        }`}
+      >
         <button onClick={() => changeMonth("prev")}>←</button>
         <span>{dayjs(selectedMonth + "-01").format("MMMM YYYY")}</span>
         <button onClick={() => changeMonth("next")}>→</button>
       </div>
 
-      <div style={{ width: "100%", height: 400 }}>
-        <ResponsiveContainer>
-          <PieChart>
-            <Pie
-              data={categorizedData}
-              dataKey="value"
-              nameKey="name"
-              cx="50%"
-              cy="50%"
-              outerRadius={120}
-              label
-            >
-              {categorizedData.map((_, index) => (
-                <Cell
-                  key={`cell-${index}`}
-                  fill={COLORS[index % COLORS.length]}
-                />
-              ))}
-            </Pie>
-            <Tooltip />
-            <Legend />
-          </PieChart>
-        </ResponsiveContainer>
-      </div>
+      {essentialData.transactions.length === 0 && loadingChartData ? (
+        <div className={styles.loadingData}>
+          <Loader loading={true} />
+        </div>
+      ) : essentialData.transactions.length === 0 && !loadingChartData ? (
+        <div className={styles.noData}>No Data</div>
+      ) : (
+        <div style={{ width: "100%", height: 400 }}>
+          <ResponsiveContainer>
+            <PieChart>
+              <Pie
+                data={categorizedData}
+                dataKey="value"
+                nameKey="name"
+                cx="50%"
+                cy="50%"
+                outerRadius={120}
+                label
+              >
+                {categorizedData.map((_, index) => (
+                  <Cell
+                    key={`cell-${index}`}
+                    fill={COLORS[index % COLORS.length]}
+                  />
+                ))}
+              </Pie>
+              <Tooltip />
+              <Legend />
+            </PieChart>
+          </ResponsiveContainer>
+        </div>
+      )}
     </div>
   );
 };

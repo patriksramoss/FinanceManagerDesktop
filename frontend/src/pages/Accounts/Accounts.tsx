@@ -1,8 +1,10 @@
 import { useState, useEffect } from "react";
 import styles from "./Accounts.module.scss";
-const backendUrl = import.meta.env.VITE_BACKEND_URL;
 import useAuthStore from "src/stores/Auth";
 import Loader from "src/components/Loader/Loader";
+
+//apis
+import { getEssentialData } from "src/api/plaid";
 
 const Accounts: React.FC = () => {
   const [essentialData, setEssentialData] = useState<any>(null);
@@ -17,25 +19,8 @@ const Accounts: React.FC = () => {
       console.log("222222222222");
 
       try {
-        const response = await fetch(
-          `${backendUrl}/api/plaid/get-essential-data`,
-          {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${token}`,
-            },
-            body: JSON.stringify({
-              access_token: token,
-            }),
-          }
-        );
-
-        if (!response.ok) throw new Error(`Status ${response.status}`);
-
-        const data = await response.json();
-        console.log("datadatadatadata", data);
-
+        const data = await getEssentialData();
+        if (!data) return;
         setEssentialData(data);
       } catch (error) {
         console.error("Error fetching essential data:", error);

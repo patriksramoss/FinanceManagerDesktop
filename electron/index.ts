@@ -13,6 +13,7 @@ const devHost = process.env.FRONTEND_HOST || "localhost";
 const devPort = process.env.FRONTEND_PORT || "5173";
 
 app.whenReady().then(() => {
+  const iconPath = path.join(__dirname, "assets", "logo.ico");
   mainWindow = new BrowserWindow({
     width: 1200,
     height: 800,
@@ -21,6 +22,7 @@ app.whenReady().then(() => {
       contextIsolation: true,
       preload: path.join(__dirname, "preload.js"),
     },
+    icon: iconPath,
   });
 
   ipcMain.handle("get-access-token", () => {
