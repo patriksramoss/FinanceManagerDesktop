@@ -1,57 +1,42 @@
 import { useState, useEffect } from "react";
-import styles from "./Summary.module.scss";
-import {
-  PieChart,
-  Pie,
-  Cell,
-  Tooltip,
-  Legend,
-  ResponsiveContainer,
-} from "recharts";
+import styles from "./Header.module.scss";
+import useAuthStore from "src/stores/Auth";
 import dayjs from "dayjs";
 import Loader from "src/components/Loader/Loader";
-
 //apis
 import { getEssentialData } from "src/api/plaid";
 
-const COLORS = [
-  "#8884d8",
-  "#82ca9d",
-  "#ffc658",
-  "#ff7f50",
-  "#8dd1e1",
-  "#d0ed57",
-  "#a4de6c",
-  "#d88884",
-];
-
-const Summary = () => {
+const Header = () => {
   const [essentialData, setEssentialData] = useState<any>(null);
+  const [loadingChartData, setLoadingChartData] = useState<boolean>(false);
+  const loadAccessToken = useAuthStore((state) => state.loadAccessToken);
   const [selectedMonth, setSelectedMonth] = useState<string>(
     dayjs().format("YYYY-MM")
   );
-  const [categorizedData, setCategorizedData] = useState<any[]>([]);
 
   const fetchTokenAndData = async () => {
-    console.log("fetchTokenAndData", selectedMonth);
+    const token = await loadAccessToken();
+    if (!token) {
+      console.warn("No cached access token found.");
+      return;
+    }
     try {
+      setLoadingChartData(true);
       const data = await getEssentialData(selectedMonth);
-      if (!data) return;
+      if (!data) {
+        setLoadingChartData(false);
+        return;
+      }
+      setLoadingChartData(false);
       setEssentialData(data);
       processCategoryData(data.transactions, selectedMonth);
-    } catch (err) {
-      console.error("Error fetching essential data:", err);
+    } catch (error) {
+      console.error("Error fetching essential data:", error);
     }
   };
 
   useEffect(() => {
     fetchTokenAndData();
-  }, []);
-
-  useEffect(() => {
-    if (essentialData?.transactions) {
-      processCategoryData(essentialData.transactions, selectedMonth);
-    }
   }, [selectedMonth]);
 
   const processCategoryData = (transactions: any[], month: string) => {
@@ -95,47 +80,31 @@ const Summary = () => {
         ? current.subtract(1, "month")
         : current.add(1, "month");
     setSelectedMonth(newDate.format("YYYY-MM"));
-    fetchTokenAndData();
   };
 
-  if (!essentialData) return <Loader loading={true} />;
+  console.log("essential data", essentialData);
+
+  if (!essentialData)
+    return (
+      <div className={styles.header}>
+        <Loader loading={true} />
+      </div>
+    );
 
   return (
-    <div className={styles["essential-data"]}>
-      <h2>Summary</h2>
-
-      <div className={styles.monthSwitcher}>
+    <div className={styles.header}>
+      <h2>Dashboard</h2>
+      <div
+        className={`${styles.monthSwitcher} ${
+          loadingChartData ? styles.loading : ""
+        }`}
+      >
         <button onClick={() => changeMonth("prev")}>←</button>
         <span>{dayjs(selectedMonth + "-01").format("MMMM YYYY")}</span>
         <button onClick={() => changeMonth("next")}>→</button>
-      </div>
-
-      <div style={{ width: "100%", height: 400 }}>
-        <ResponsiveContainer>
-          <PieChart>
-            <Pie
-              data={categorizedData}
-              dataKey="value"
-              nameKey="name"
-              cx="50%"
-              cy="50%"
-              outerRadius={120}
-              label
-            >
-              {categorizedData.map((_, index) => (
-                <Cell
-                  key={`cell-${index}`}
-                  fill={COLORS[index % COLORS.length]}
-                />
-              ))}
-            </Pie>
-            <Tooltip />
-            <Legend />
-          </PieChart>
-        </ResponsiveContainer>
       </div>
     </div>
   );
 };
 
-export default Summary;
+export default Header;

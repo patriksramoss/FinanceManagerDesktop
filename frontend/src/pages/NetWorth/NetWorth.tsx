@@ -1,12 +1,12 @@
 import { useState, useEffect } from "react";
-import styles from "./Identity.module.scss";
+import styles from "./NetWorth.module.scss";
 import useAuthStore from "src/stores/Auth";
 import Loader from "src/components/Loader/Loader";
 
 //apis
 import { getEssentialData } from "src/api/plaid";
 
-const Identity: React.FC = () => {
+const NetWorth: React.FC = () => {
   const [essentialData, setEssentialData] = useState<any>(null);
   const loadAccessToken = useAuthStore((state) => state.loadAccessToken);
   useEffect(() => {
@@ -16,10 +16,11 @@ const Identity: React.FC = () => {
         console.warn("No cached access token found.");
         return;
       }
+      console.log("222222222222");
+
       try {
         const data = await getEssentialData();
         if (!data) return;
-
         setEssentialData(data);
       } catch (error) {
         console.error("Error fetching essential data:", error);
@@ -33,7 +34,7 @@ const Identity: React.FC = () => {
     return (
       <div className={styles.homeContainer}>
         <div className={styles.flexBox}>
-          <div className={styles.identityWrapper}>
+          <div className={styles.accountWrapper}>
             <Loader loading={true} />
           </div>
         </div>
@@ -43,29 +44,19 @@ const Identity: React.FC = () => {
   return (
     <div className={styles.homeContainer}>
       <div className={styles.flexBox}>
-        <div className={styles.identityWrapper}>
-          <h3>Identity</h3>
-          <div className={styles.identity}>
-            {essentialData.identity.accounts.map((account: any) => (
+        <div className={styles.accountWrapper}>
+          <h3>Accounts</h3>
+          <div className={styles.accounts}>
+            {essentialData.accounts.map((account: any) => (
               <div key={account.account_id} className={styles.section}>
                 <p>
                   <strong>{account.name}</strong> ({account.subtype})
                 </p>
-                {account.owners.map((owner: any, index: number) => (
-                  <div key={index}>
-                    <p>Owner(s): {owner.names.join(", ")}</p>
-                    <p>
-                      Emails:{" "}
-                      {owner.emails.map((email: any) => email.data).join(", ")}
-                    </p>
-                    <p>
-                      Phone Numbers:{" "}
-                      {owner.phone_numbers
-                        .map((phone: any) => phone.data)
-                        .join(", ")}
-                    </p>
-                  </div>
-                ))}
+                <p>
+                  Balance: {account.balances.current}{" "}
+                  {account.balances.iso_currency_code}
+                </p>
+                <p>Account Number: ****{account.mask}</p>
               </div>
             ))}
           </div>
@@ -75,4 +66,4 @@ const Identity: React.FC = () => {
   );
 };
 
-export default Identity;
+export default NetWorth;

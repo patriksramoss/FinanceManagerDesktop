@@ -17,33 +17,53 @@ const Navbar: React.FC<NavbarProps> = ({ onLogout }) => {
       <>
         <nav className={styles.navbar}>
           <NavLink
-            to="/summary"
+            to="/dashboard"
             className={({ isActive }) =>
               `${styles.navItem} ${isActive ? styles.active : ""}`
             }
           >
-            Summary
+            Dashboard
           </NavLink>
           <NavLink
-            to="/accounts"
+            to="/netWorth"
             className={({ isActive }) =>
               `${styles.navItem} ${isActive ? styles.active : ""}`
             }
           >
-            Accounts
+            Net Worth
           </NavLink>
           <NavLink
-            to="/identity"
+            to="/transactions"
             className={({ isActive }) =>
               `${styles.navItem} ${isActive ? styles.active : ""}`
             }
           >
-            Identity
+            Transactions
+          </NavLink>
+          <NavLink
+            to="/budgets"
+            className={({ isActive }) =>
+              `${styles.navItem} ${isActive ? styles.active : ""}`
+            }
+          >
+            Budgets
+          </NavLink>
+          <NavLink
+            to="/reports"
+            className={({ isActive }) =>
+              `${styles.navItem} ${isActive ? styles.active : ""}`
+            }
+          >
+            Reports
           </NavLink>
         </nav>
         <div className={styles.logoutButtonWrapper}>
-          <button className={styles.logoutButton} onClick={onLogout}>
-            <RiLogoutBoxLine /> Logout
+          <button
+            className={styles.logoutButton}
+            onClick={onLogout}
+            title="Logout"
+          >
+            <RiLogoutBoxLine />
           </button>
         </div>
       </>

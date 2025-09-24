@@ -1,12 +1,12 @@
 import { useState, useEffect } from "react";
-import styles from "./Accounts.module.scss";
+import styles from "./Budgets.module.scss";
 import useAuthStore from "src/stores/Auth";
 import Loader from "src/components/Loader/Loader";
 
 //apis
 import { getEssentialData } from "src/api/plaid";
 
-const Accounts: React.FC = () => {
+const Budgets: React.FC = () => {
   const [essentialData, setEssentialData] = useState<any>(null);
   const loadAccessToken = useAuthStore((state) => state.loadAccessToken);
   useEffect(() => {
@@ -66,4 +66,4 @@ const Accounts: React.FC = () => {
   );
 };
 
-export default Accounts;
+export default Budgets;

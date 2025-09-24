@@ -1,9 +1,11 @@
 import React, { useEffect } from "react";
 import { Routes, Route, useNavigate } from "react-router-dom";
 import Auth from "./pages/Auth/Auth";
-import Summary from "./pages/Summary/Summary";
-import Identity from "./pages/Identity/Identity";
-import Accounts from "./pages/Accounts/Accounts";
+import Dashboard from "./pages/Dashboard/Dashboard";
+import Budgets from "./pages/Budgets/Budgets";
+import NetWorth from "./pages/NetWorth/NetWorth";
+import Transactions from "./pages/Transactions/Transactions";
+import Reports from "./pages/Reports/Reports";
 
 import useAuthStore from "./stores/Auth";
 import Navbar from "src/components/Navbar/Navbar";
@@ -33,18 +35,24 @@ const App: React.FC = () => {
     <>
       {isAuthenticated && <Navbar onLogout={handleLogout} />}
       <Routes>
-        <Route path="/" element={isAuthenticated ? <Summary /> : <Auth />} />
+        <Route path="/" element={isAuthenticated ? <Dashboard /> : <Auth />} />
       </Routes>
       {isAuthenticated && (
         <>
           <Routes>
-            <Route path="/summary" element={<Summary />} />
+            <Route path="/dashboard" element={<Dashboard />} />
           </Routes>
           <Routes>
-            <Route path="/accounts" element={<Accounts />} />
+            <Route path="/netWorth" element={<NetWorth />} />
           </Routes>
           <Routes>
-            <Route path="/identity" element={<Identity />} />
+            <Route path="/transactions" element={<Transactions />} />
+          </Routes>
+          <Routes>
+            <Route path="/budgets" element={<Budgets />} />
+          </Routes>
+          <Routes>
+            <Route path="/reports" element={<Reports />} />
           </Routes>
         </>
       )}

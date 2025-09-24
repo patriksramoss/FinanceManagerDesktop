@@ -1,4 +1,10 @@
 $color-primary: linear-gradient(90deg, #eceff4, #dee3ea, #d1d7df);
+$color-primary-06: linear-gradient(
+  90deg,
+  rgba(236, 239, 244, 0.5),
+  rgba(222, 227, 234, 0.5),
+  rgba(209, 215, 223, 0.5)
+);
 $color-accent: linear-gradient(
   90deg,
   rgb(254, 38, 92),
@@ -13,19 +19,30 @@ $color-danger-2: linear-gradient(
   rgb(243, 69, 26)
 );
 $color-bg: linear-gradient(90deg, #ffffff, #f9fafb, #f0f2f5);
-$color-bg2: linear-gradient(90deg, #f0f2f5, #e7eaee, #dee2e7);
+$color-bg-06: linear-gradient(
+  90deg,
+  rgba(255, 255, 255, 0.6),
+  rgba(249, 250, 251, 0.6),
+  rgba(240, 242, 245, 0.6)
+);
 
+$color-bg2: linear-gradient(90deg, #f0f2f5, #e7eaee, #dee2e7);
+$color-bg2-06: linear-gradient(
+  90deg,
+  rgba(240, 242, 245, 0.6),
+  rgba(231, 234, 238, 0.6),
+  rgba(222, 226, 231, 0.6)
+);
 $color-text: #111827;
 $color-text-white: #edeef0;
-
+$solid-white: #ffffff;
+$color-border: #ddd;
 $font-main: Georgia, sans-serif;
-
 $spacing-sm: 0.5rem;
 $spacing-md: 1rem;
 $spacing-lg: 2rem;
-
 $radius-sm: 4px;
 $radius-md: 8px;
 $radius-lg: 16px;
-
 $box-shadow: 0 2px 4px rgba(0, 0, 0, 0.4);
+$blur-01: blur(10px);
