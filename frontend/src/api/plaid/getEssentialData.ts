@@ -37,6 +37,8 @@ export const getEssentialData = async (
 
   if (!response.ok) throw new Error(`Status ${response.status}`);
 
+  console.log("1111111111111111", response);
+
   const data: EssentialData = await response.json();
   cacheEssentialData(setSelectedMonth, data);
 

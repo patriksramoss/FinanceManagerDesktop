@@ -7,13 +7,16 @@ let accessToken: string | null = null;
 
 interface PlaidStore {
   cache: Record<string, EssentialData>;
+  selectedMonthDashboard: string | null;
   getEssentialData: (month: string) => EssentialData | undefined;
   setEssentialData: (month: string, data: EssentialData) => void;
+  setSelectedMonthDashboard: (month: string) => void;
   clearCache: () => void;
 }
 
 const usePlaidStore = create<PlaidStore>((set, get) => ({
   cache: {},
+  selectedMonthDashboard: null,
   getEssentialData: (month) => get().cache[month],
   setEssentialData: (month, data) =>
     set((state) => ({
@@ -22,6 +25,7 @@ const usePlaidStore = create<PlaidStore>((set, get) => ({
         [month]: data,
       },
     })),
+  setSelectedMonthDashboard: (month) => set({ selectedMonthDashboard: month }),
   clearCache: () => set({ cache: {} }),
 }));
 

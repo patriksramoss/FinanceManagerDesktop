@@ -10,8 +10,11 @@ import Reports from "./pages/Reports/Reports";
 import useAuthStore from "./stores/Auth";
 import Navbar from "src/components/Navbar/Navbar";
 import { getCachedAccessToken } from "src/stores/Plaid";
+import Lenis from "lenis";
+
 // styles
 import "./styles/Global.scss";
+import "lenis/dist/lenis.css";
 
 const App: React.FC = () => {
   const navigate = useNavigate();
@@ -30,6 +33,17 @@ const App: React.FC = () => {
     await clearAccessToken();
     navigate("/");
   };
+
+  const lenis = new Lenis({
+    autoRaf: true,
+  });
+
+  function raf(time: number) {
+    lenis.raf(time);
+    requestAnimationFrame(raf);
+  }
+
+  requestAnimationFrame(raf);
 
   return (
     <>

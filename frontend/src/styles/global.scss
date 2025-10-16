@@ -1,12 +1,29 @@
 @import url("https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;700;800&display=swap");
 
-#root {
-  width: 100%;
+* {
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
   font-family: "Manrope", -apple-system, BlinkMacSystemFont, "Roboto",
     sans-serif;
+  scrollbar-width: thin;
+  scrollbar-color: #fe5d26ff #e7eaee;
+}
+
+#root {
+  width: 100%;
 }
 
 body {
   height: 100vh;
   background: $color-bg;
+}
+
+input,
+textarea {
+  user-select: text;
+  -webkit-user-select: text;
+  -moz-user-select: text;
+  -ms-user-select: text;
 }

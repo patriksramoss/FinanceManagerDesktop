@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
 import styles from "./Chart.module.scss";
-import useAuthStore from "src/stores/Auth";
 import {
   PieChart,
   Pie,
@@ -11,8 +10,8 @@ import {
 } from "recharts";
 import dayjs from "dayjs";
 import Loader from "src/components/Loader/Loader";
-//apis
-import { getEssentialData } from "src/api/plaid";
+//stores
+import usePlaidStore from "src/stores/Plaid";
 
 const COLORS = [
   "#8884d8",
@@ -26,46 +25,20 @@ const COLORS = [
 ];
 
 const Chart = () => {
-  const [essentialData, setEssentialData] = useState<any>(null);
   const [loadingChartData, setLoadingChartData] = useState<boolean>(false);
-  const loadAccessToken = useAuthStore((state) => state.loadAccessToken);
-  const [selectedMonth, setSelectedMonth] = useState<string>(
-    dayjs().format("YYYY-MM")
-  );
   const [categorizedData, setCategorizedData] = useState<any[]>([]);
-
-  const fetchTokenAndData = async () => {
-    const token = await loadAccessToken();
-    if (!token) {
-      console.warn("No cached access token found.");
-      return;
-    }
-    try {
-      console.log("FETCVHING ESSENTIAL DATA", selectedMonth);
-      setLoadingChartData(true);
-      const data = await getEssentialData(selectedMonth);
-      if (!data) {
-        setLoadingChartData(false);
-        return;
-      }
-      console.log("SETTING ESSENTIAL DATA", data);
-      setLoadingChartData(false);
-      setEssentialData(data);
-      processCategoryData(data.transactions, selectedMonth);
-    } catch (error) {
-      console.error("Error fetching essential data:", error);
-    }
-  };
-
-  // useEffect(() => {
-  //   fetchTokenAndData();
-  // }, []);
+  const selectedMonthDashboard = usePlaidStore(
+    (state) => state.selectedMonthDashboard || ""
+  );
+  const essentialData = usePlaidStore((state) =>
+    selectedMonthDashboard ? state.cache[selectedMonthDashboard] : undefined
+  );
 
   useEffect(() => {
-    console.log("CHANGING MONTHS", selectedMonth);
-    console.log("essentialData", essentialData);
-    fetchTokenAndData();
-  }, [selectedMonth]);
+    if (essentialData) {
+      processCategoryData(essentialData?.transactions, selectedMonthDashboard);
+    }
+  }, [selectedMonthDashboard]);
 
   const processCategoryData = (transactions: any[], month: string) => {
     const filtered = transactions.filter(
@@ -97,20 +70,8 @@ const Chart = () => {
         .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
         .join(" "),
     }));
-
     setCategorizedData(formattedData);
   };
-
-  const changeMonth = (direction: "prev" | "next") => {
-    const current = dayjs(selectedMonth + "-01");
-    const newDate =
-      direction === "prev"
-        ? current.subtract(1, "month")
-        : current.add(1, "month");
-    setSelectedMonth(newDate.format("YYYY-MM"));
-  };
-
-  console.log("essential data", essentialData);
 
   if (!essentialData)
     return (
@@ -122,17 +83,6 @@ const Chart = () => {
   return (
     <div className={styles["essential-data"]}>
       <h2>Summary</h2>
-
-      <div
-        className={`${styles.monthSwitcher} ${
-          loadingChartData ? styles.loading : ""
-        }`}
-      >
-        <button onClick={() => changeMonth("prev")}>←</button>
-        <span>{dayjs(selectedMonth + "-01").format("MMMM YYYY")}</span>
-        <button onClick={() => changeMonth("next")}>→</button>
-      </div>
-
       {essentialData.transactions.length === 0 && loadingChartData ? (
         <div className={styles.loadingData}>
           <Loader loading={true} />
@@ -151,6 +101,7 @@ const Chart = () => {
                 cy="50%"
                 outerRadius={120}
                 label
+                isAnimationActive={false}
               >
                 {categorizedData.map((_, index) => (
                   <Cell

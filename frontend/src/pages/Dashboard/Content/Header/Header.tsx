@@ -5,6 +5,10 @@ import dayjs from "dayjs";
 import Loader from "src/components/Loader/Loader";
 //apis
 import { getEssentialData } from "src/api/plaid";
+//icons
+import { FaArrowAltCircleRight, FaArrowAltCircleLeft } from "react-icons/fa";
+//stores
+import usePlaidStore from "src/stores/Plaid";
 
 const Header = () => {
   const [essentialData, setEssentialData] = useState<any>(null);
@@ -29,7 +33,8 @@ const Header = () => {
       }
       setLoadingChartData(false);
       setEssentialData(data);
-      processCategoryData(data.transactions, selectedMonth);
+      usePlaidStore.getState().setEssentialData(selectedMonth, data);
+      // processCategoryData(data.transactions, selectedMonth);
     } catch (error) {
       console.error("Error fetching essential data:", error);
     }
@@ -39,40 +44,6 @@ const Header = () => {
     fetchTokenAndData();
   }, [selectedMonth]);
 
-  const processCategoryData = (transactions: any[], month: string) => {
-    const filtered = transactions.filter(
-      (txn) => dayjs(txn.date).format("YYYY-MM") === month
-    );
-
-    const summary: { [category: string]: number } = {};
-
-    filtered.forEach((txn) => {
-      const category =
-        txn.personal_finance_category?.primary ||
-        txn.merchant_name ||
-        "Uncategorized";
-
-      summary[category] = (summary[category] || 0) + txn.amount;
-    });
-
-    const data = Object.entries(summary).map(([name, value]) => ({
-      name,
-      value: parseFloat(value.toFixed(2)),
-    }));
-
-    const formattedData = data.map((entry) => ({
-      ...entry,
-      value: Math.abs(entry.value),
-      name: entry.name
-        .toLowerCase()
-        .split("_")
-        .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-        .join(" "),
-    }));
-
-    setCategorizedData(formattedData);
-  };
-
   const changeMonth = (direction: "prev" | "next") => {
     const current = dayjs(selectedMonth + "-01");
     const newDate =
@@ -80,6 +51,9 @@ const Header = () => {
         ? current.subtract(1, "month")
         : current.add(1, "month");
     setSelectedMonth(newDate.format("YYYY-MM"));
+    usePlaidStore
+      .getState()
+      .setSelectedMonthDashboard(newDate.format("YYYY-MM"));
   };
 
   console.log("essential data", essentialData);
@@ -99,9 +73,13 @@ const Header = () => {
           loadingChartData ? styles.loading : ""
         }`}
       >
-        <button onClick={() => changeMonth("prev")}>←</button>
+        <button onClick={() => changeMonth("prev")}>
+          <FaArrowAltCircleLeft />
+        </button>
         <span>{dayjs(selectedMonth + "-01").format("MMMM YYYY")}</span>
-        <button onClick={() => changeMonth("next")}>→</button>
+        <button onClick={() => changeMonth("next")}>
+          <FaArrowAltCircleRight />
+        </button>
       </div>
     </div>
   );

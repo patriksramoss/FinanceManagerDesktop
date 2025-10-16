@@ -19,7 +19,7 @@ export interface PlaidPhoneNumber {
 }
 
 export interface PlaidOwner {
-  addresses: any[]; // Add detail if needed
+  addresses: any[];
   emails: PlaidEmail[];
   names: string[];
   phone_numbers: PlaidPhoneNumber[];

@@ -14,10 +14,12 @@ const Auth: React.FC = () => {
   };
 
   return (
-    <div className={styles.authContainer}>
-      <img src={logoImg} alt="Logo" className={styles.logo} />
-      <h2>Link Your Bank</h2>
-      <PlaidLinkButton onSuccess={handleSuccess} />
+    <div className={styles.authWrapper}>
+      <div className={styles.authContainer}>
+        <img src={logoImg} alt="Logo" className={styles.logo} />
+        <h2>Link Your Bank</h2>
+        <PlaidLinkButton onSuccess={handleSuccess} />
+      </div>
     </div>
   );
 };

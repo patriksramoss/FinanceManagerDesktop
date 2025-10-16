@@ -5,4 +5,9 @@ A finance management app for Windows, Linux and MacOS that uses Plaid services t
 # How to run
 
 1. npm run npm-install-packages
-2. npm run start (or be, fe and electron)
+2. npm run start
+3. For individual processes -
+   "fe": "cd frontend && npm run dev",
+   "be": "cd backend && npm run dev",
+   "electron": "cd electron && npm run dev",
+   "npm-install-packages": "cd frontend && npm i && cd ../backend && npm i && cd ../electron && npm i"
