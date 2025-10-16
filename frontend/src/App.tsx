@@ -38,13 +38,6 @@ const App: React.FC = () => {
     autoRaf: true,
   });
 
-  function raf(time: number) {
-    lenis.raf(time);
-    requestAnimationFrame(raf);
-  }
-
-  requestAnimationFrame(raf);
-
   return (
     <>
       {isAuthenticated && <Navbar onLogout={handleLogout} />}
