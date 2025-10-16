@@ -2,14 +2,33 @@
   display: flex;
   flex-direction: row;
   align-items: center;
-  justify-content: space-between;
+  justify-content: center;
   width: 100%;
   padding: 1rem 2rem;
-  background: $color-bg3;
   border-radius: 12px;
   color: $color-text-white;
-  box-shadow: $box-shadow-2;
-  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+
+  .headerBox {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem 2rem;
+    background: $color-bg3;
+    border-radius: 12px;
+    color: $color-text-white;
+    box-shadow: $box-shadow-2;
+  }
+
+  .monthSwitcherBox {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem 2rem;
+    border-radius: 12px;
+    color: $color-text;
+  }
 
   h2 {
     font-weight: 700;
@@ -32,7 +51,7 @@
       margin: 0 1rem;
       font-weight: 600;
       font-size: 1rem;
-      color: $color-text-white;
+      color: $color-text;
       min-width: 140px;
       text-align: center;
     }
@@ -53,7 +72,7 @@
 
       &:hover {
         background-color: rgba(255, 255, 255, 0.2);
-        color: #ffffff;
+        color: $color-accentSOLID;
       }
 
       &:focus {
@@ -71,7 +90,6 @@
   }
 }
 
-// Responsive: stack vertically on small screens
 @media (max-width: 480px) {
   .header {
     flex-direction: column;

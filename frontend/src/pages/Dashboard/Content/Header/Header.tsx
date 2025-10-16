@@ -19,6 +19,10 @@ const Header = () => {
   );
 
   const fetchTokenAndData = async () => {
+    console.log(
+      "selectedMonth fetchTokenAndDatafetchTokenAndDatafetchTokenAndData",
+      selectedMonth
+    );
     const token = await loadAccessToken();
     if (!token) {
       console.warn("No cached access token found.");
@@ -34,6 +38,7 @@ const Header = () => {
       setLoadingChartData(false);
       setEssentialData(data);
       usePlaidStore.getState().setEssentialData(selectedMonth, data);
+      console.log(usePlaidStore.getState().cache);
       // processCategoryData(data.transactions, selectedMonth);
     } catch (error) {
       console.error("Error fetching essential data:", error);
@@ -56,8 +61,6 @@ const Header = () => {
       .setSelectedMonthDashboard(newDate.format("YYYY-MM"));
   };
 
-  console.log("essential data", essentialData);
-
   if (!essentialData)
     return (
       <div className={styles.header}>
@@ -67,19 +70,23 @@ const Header = () => {
 
   return (
     <div className={styles.header}>
-      <h2>Dashboard</h2>
-      <div
-        className={`${styles.monthSwitcher} ${
-          loadingChartData ? styles.loading : ""
-        }`}
-      >
-        <button onClick={() => changeMonth("prev")}>
-          <FaArrowAltCircleLeft />
-        </button>
-        <span>{dayjs(selectedMonth + "-01").format("MMMM YYYY")}</span>
-        <button onClick={() => changeMonth("next")}>
-          <FaArrowAltCircleRight />
-        </button>
+      {/* <div className={styles.headerBox}>
+        <h2>Dashboard</h2>
+      </div> */}
+      <div className={styles.monthSwitcherBox}>
+        <div
+          className={`${styles.monthSwitcher} ${
+            loadingChartData ? styles.loading : ""
+          }`}
+        >
+          <button onClick={() => changeMonth("prev")}>
+            <FaArrowAltCircleLeft />
+          </button>
+          <span>{dayjs(selectedMonth + "-01").format("MMMM YYYY")}</span>
+          <button onClick={() => changeMonth("next")}>
+            <FaArrowAltCircleRight />
+          </button>
+        </div>
       </div>
     </div>
   );

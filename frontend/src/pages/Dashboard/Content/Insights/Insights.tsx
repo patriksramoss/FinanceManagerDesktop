@@ -1,7 +1,18 @@
-import React from "react";
+import React, { useEffect } from "react";
 import styles from "./Insights.module.scss";
+//stores
+import usePlaidStore from "src/stores/Plaid";
 
 const Insights: React.FC = () => {
+  const selectedMonthDashboard = usePlaidStore(
+    (state) => state.selectedMonthDashboard || ""
+  );
+  const essentialData = usePlaidStore((state) =>
+    selectedMonthDashboard ? state.cache[selectedMonthDashboard] : undefined
+  );
+  useEffect(() => {
+    console.log("eeeesential data", essentialData);
+  }, [essentialData]);
   return (
     <div className={styles.insights}>
       <h3>Spending Insights</h3>

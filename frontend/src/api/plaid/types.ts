@@ -112,8 +112,13 @@ export interface PlaidTransaction {
   website: string;
 }
 
+export interface Dashboard {
+  allTransactionSum: number;
+}
+
 export interface EssentialData {
   accounts: PlaidAccount[];
   identity: PlaidIdentity;
   transactions: PlaidTransaction[];
+  dashboard: Dashboard;
 }

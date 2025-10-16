@@ -2,6 +2,7 @@ import useAuthStore from "src/stores/Auth";
 import usePlaidStore from "src/stores/Plaid";
 import { EssentialData } from "./types";
 import dayjs from "dayjs";
+
 const backendUrl = import.meta.env.VITE_BACKEND_URL;
 const loadAccessToken = useAuthStore.getState().loadAccessToken;
 const getCachedEssentialData = usePlaidStore.getState().getEssentialData;
@@ -37,10 +38,23 @@ export const getEssentialData = async (
 
   if (!response.ok) throw new Error(`Status ${response.status}`);
 
-  console.log("1111111111111111", response);
-
   const data: EssentialData = await response.json();
-  cacheEssentialData(setSelectedMonth, data);
 
-  return data;
+  const completedTransactions = data.transactions.filter((t) => !t.pending);
+  const allTransactionSum = Number(
+    completedTransactions.reduce((sum, t) => sum + t.amount, 0).toFixed(2)
+  );
+
+  const enrichedData: EssentialData & {
+    dashboard: { allTransactionSum: number };
+  } = {
+    ...data,
+    dashboard: {
+      allTransactionSum,
+    },
+  };
+
+  cacheEssentialData(setSelectedMonth, enrichedData);
+
+  return enrichedData;
 };

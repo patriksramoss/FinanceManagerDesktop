@@ -76,6 +76,7 @@ const Chart = () => {
   if (!essentialData)
     return (
       <div className={styles["essential-data"]}>
+        <h2>Summary</h2>
         <Loader loading={true} />
       </div>
     );
@@ -84,8 +85,10 @@ const Chart = () => {
     <div className={styles["essential-data"]}>
       <h2>Summary</h2>
       {essentialData.transactions.length === 0 && loadingChartData ? (
-        <div className={styles.loadingData}>
-          <Loader loading={true} />
+        <div style={{ width: "100%", height: 400 }}>
+          <div className={styles.loadingData}>
+            <Loader loading={true} />
+          </div>
         </div>
       ) : essentialData.transactions.length === 0 && !loadingChartData ? (
         <div className={styles.noData}>No Data</div>
