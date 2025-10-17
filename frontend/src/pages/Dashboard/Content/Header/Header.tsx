@@ -4,7 +4,7 @@ import useAuthStore from "src/stores/Auth";
 import dayjs from "dayjs";
 import Loader from "src/components/Loader/Loader";
 //apis
-import { getEssentialData } from "src/api/plaid";
+import { plaidController } from "src/api/plaid/index";
 //icons
 import { FaArrowAltCircleRight, FaArrowAltCircleLeft } from "react-icons/fa";
 //stores
@@ -30,7 +30,7 @@ const Header = () => {
     }
     try {
       setLoadingChartData(true);
-      const data = await getEssentialData(selectedMonth);
+      const data = await plaidController.getEssentialData(selectedMonth);
       if (!data) {
         setLoadingChartData(false);
         return;

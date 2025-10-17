@@ -1,66 +1,82 @@
-import { useState, useEffect } from "react";
-import styles from "./NetWorth.module.scss";
-import useAuthStore from "src/stores/Auth";
+import { useEffect, useState } from "react";
+import usePlaidStore from "src/stores/Plaid";
+import plaidController from "src/api/plaid/index";
 import Loader from "src/components/Loader/Loader";
-
-//apis
-import { getEssentialData } from "src/api/plaid";
+import styles from "./NetWorth.module.scss";
 
 const NetWorth: React.FC = () => {
-  const [essentialData, setEssentialData] = useState<any>(null);
-  const loadAccessToken = useAuthStore((state) => state.loadAccessToken);
-  useEffect(() => {
-    const fetchTokenAndData = async () => {
-      const token = await loadAccessToken();
-      if (!token) {
-        console.warn("No cached access token found.");
-        return;
-      }
-      console.log("222222222222");
+  const { accounts, accountsLoading, setAccountsLoading } = usePlaidStore();
+  const [netWorth, setNetWorth] = useState(0);
 
+  useEffect(() => {
+    const fetchAccounts = async () => {
+      setAccountsLoading(true);
       try {
-        const data = await getEssentialData();
-        if (!data) return;
-        setEssentialData(data);
-      } catch (error) {
-        console.error("Error fetching essential data:", error);
+        const fetchedAccounts = await plaidController.getAccounts();
+        const worth = fetchedAccounts.reduce((sum: number, acc: any) => {
+          const balance = acc.balances?.current ?? 0;
+          if (acc.type === "credit" || acc.type === "loan") {
+            return sum - balance;
+          }
+          return sum + balance;
+        }, 0);
+        setAccountsLoading(false);
+        setNetWorth(Number(worth.toFixed(2)));
+      } catch (err) {
+        console.error("Error fetching accounts:", err);
       }
     };
 
-    fetchTokenAndData();
+    fetchAccounts();
   }, []);
 
-  if (!essentialData)
+  if (accountsLoading || !accounts) {
     return (
       <div className={styles.homeContainer}>
-        <div className={styles.flexBox}>
-          <div className={styles.accountWrapper}>
-            <Loader loading={true} />
-          </div>
-        </div>
+        <Loader loading={true} />
       </div>
     );
+  }
 
   return (
     <div className={styles.homeContainer}>
-      <div className={styles.flexBox}>
-        <div className={styles.accountWrapper}>
-          <h3>Accounts</h3>
-          <div className={styles.accounts}>
-            {essentialData.accounts.map((account: any) => (
-              <div key={account.account_id} className={styles.section}>
-                <p>
-                  <strong>{account.name}</strong> ({account.subtype})
-                </p>
-                <p>
-                  Balance: {account.balances.current}{" "}
-                  {account.balances.iso_currency_code}
-                </p>
-                <p>Account Number: ****{account.mask}</p>
-              </div>
-            ))}
+      <h2>
+        Net Worth:{" "}
+        {netWorth.toLocaleString("en-EN", {
+          style: "currency",
+          currency: "EUR",
+        })}
+      </h2>
+
+      <div className={styles.accounts}>
+        {accounts.map((acc: any) => (
+          <div key={acc.account_id} className={styles.section}>
+            <h4>
+              {acc.name} {acc.mask ? `****${acc.mask}` : ""}
+            </h4>
+            <p>
+              Type: {acc.type} ({acc.subtype})
+            </p>
+            <p>
+              Balance:{" "}
+              {acc.balances?.current != null
+                ? acc.balances.current.toLocaleString("en-EN", {
+                    style: "currency",
+                    currency: acc.balances.iso_currency_code || "EUR",
+                  })
+                : "N/A"}
+            </p>
+            {acc.balances?.available != null && (
+              <p>
+                Available:{" "}
+                {acc.balances.available.toLocaleString("en-EN", {
+                  style: "currency",
+                  currency: acc.balances.iso_currency_code || "EUR",
+                })}
+              </p>
+            )}
           </div>
-        </div>
+        ))}
       </div>
     </div>
   );

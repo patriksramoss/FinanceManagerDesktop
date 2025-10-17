@@ -2,9 +2,9 @@ import { useState, useEffect } from "react";
 import styles from "./Transactions.module.scss";
 import useAuthStore from "src/stores/Auth";
 import Loader from "src/components/Loader/Loader";
-
+import dayjs from "dayjs";
 //apis
-import { getEssentialData } from "src/api/plaid";
+import { plaidController } from "src/api/plaid/index";
 
 const Transactions: React.FC = () => {
   const [essentialData, setEssentialData] = useState<any>(null);
@@ -17,7 +17,9 @@ const Transactions: React.FC = () => {
         return;
       }
       try {
-        const data = await getEssentialData();
+        const data = await plaidController.getEssentialData(
+          dayjs().format("YYYY-MM")
+        );
         if (!data) return;
 
         setEssentialData(data);

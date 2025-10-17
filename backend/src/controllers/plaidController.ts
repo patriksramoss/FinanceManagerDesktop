@@ -8,7 +8,7 @@ import {
   CountryCode,
 } from "plaid";
 import { AxiosError } from "axios";
-import moment from "moment";
+import dayjs from "dayjs";
 
 const clientId = process.env.PLAID_CLIENT_ID;
 const secret = process.env.PLAID_SECRET;
@@ -19,7 +19,7 @@ if (!clientId || !secret) {
   );
 }
 
-const configuration = new Configuration({
+export const configuration = new Configuration({
   basePath: "https://sandbox.plaid.com",
   baseOptions: {
     headers: {
@@ -29,7 +29,7 @@ const configuration = new Configuration({
   },
 });
 
-const plaidClient = new PlaidApi(configuration);
+export const plaidClient = new PlaidApi(configuration);
 
 export const createLinkToken = async (
   req: Request,
@@ -93,84 +93,54 @@ export const exchangePublicToken = async (
     res.status(500).json({ error: "Failed to exchange public token" });
   }
 };
-
-export const getTransactions = async (
-  req: Request,
-  res: Response
-): Promise<void> => {
-  const { access_token } = req.body;
-
-  if (!access_token) {
-    res.status(400).json({ error: "Access token is required" });
-  }
-
-  try {
-    const response = await plaidClient.transactionsGet({
-      access_token: access_token,
-      start_date: "2022-01-01",
-      end_date: "2022-12-31",
-    });
-
-    const transactions = response.data.transactions;
-    res.json({ transactions });
-  } catch (error) {
-    console.error("Error fetching transactions:", error);
-    const axiosError = error as AxiosError;
-    res.status(500).json({
-      error: axiosError.response?.data || "Failed to fetch transactions",
-    });
-  }
-};
-
 export const getEssentialData = async (
   req: Request,
   res: Response
 ): Promise<void> => {
   const { access_token, month } = req.body;
-
   if (!access_token) {
     res.status(400).json({ error: "Access token is required" });
+    return;
   }
 
   try {
-    const monthToUse = month || moment().format("YYYY-MM");
-    const startDate = moment(monthToUse, "YYYY-MM")
+    const monthToUse = month || dayjs().format("YYYY-MM");
+    const startDate = dayjs(monthToUse, "YYYY-MM")
       .startOf("month")
       .format("YYYY-MM-DD");
-    const endDate = moment(monthToUse, "YYYY-MM")
+    const endDate = dayjs(monthToUse, "YYYY-MM")
       .endOf("month")
       .format("YYYY-MM-DD");
 
-    const accountsResponse = await plaidClient.accountsGet({
-      access_token: access_token,
-    });
+    const [accountsResponse, identityResponse, transactionsResponse] =
+      await Promise.all([
+        plaidClient.accountsGet({ access_token }),
+        plaidClient.identityGet({ access_token }),
+        plaidClient.transactionsGet({
+          access_token,
+          start_date: startDate,
+          end_date: endDate,
+          options: { count: 500, offset: 0 },
+        }),
+      ]);
 
-    const identityResponse = await plaidClient.identityGet({
-      access_token: access_token,
-    });
-
-    const transactionsResponse = await plaidClient.transactionsGet({
-      access_token: access_token,
-      start_date: startDate,
-      end_date: endDate,
-      options: {
-        count: 500,
-        offset: 0,
-      },
-    });
-
-    const data = {
+    res.json({
       accounts: accountsResponse.data.accounts,
       identity: identityResponse.data,
       transactions: transactionsResponse.data.transactions,
-    };
-
-    res.json(data);
+    });
   } catch (error) {
     const axiosError = error as AxiosError;
-    console.error("Error fetching Plaid data:", axiosError.response?.data);
+    console.error(
+      "Error fetching essential Plaid data:",
+      axiosError.response?.data
+    );
     res.status(500).json({
-      error: axiosError.response?.data || "Failed to fetch data from Plaid",
+      error: axiosError.response?.data || "Failed to fetch essential data",
     });
   }
 };
+
+export { getAccounts } from "./modules/Plaid/accounts";
+export { getIdentity } from "./modules/Plaid/identity";
+export { getTransactions } from "./modules/Plaid/transactions";
