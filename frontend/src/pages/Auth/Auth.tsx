@@ -15,10 +15,17 @@ const Auth: React.FC = () => {
 
   return (
     <div className={styles.authWrapper}>
-      <div className={styles.authContainer}>
-        <img src={logoImg} alt="Logo" className={styles.logo} />
-        <h2>Link Your Bank</h2>
-        <PlaidLinkButton onSuccess={handleSuccess} />
+      <div className={styles.authCard}>
+        <div className={styles.leftPane} />
+        <div className={styles.rightPane}>
+          <img src={logoImg} alt="Logo" className={styles.logo} />
+          <h2 className={styles.title}>Link Your Bank</h2>
+          <p className={styles.subtitle}>
+            Securely connect your bank account to continue
+          </p>
+          <PlaidLinkButton onSuccess={handleSuccess} />
+          <span className={styles.disclaimer}></span>
+        </div>
       </div>
     </div>
   );
