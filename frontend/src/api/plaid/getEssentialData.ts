@@ -9,7 +9,7 @@ const getCachedEssentialData = usePlaidStore.getState().getEssentialData;
 const cacheEssentialData = usePlaidStore.getState().setEssentialData;
 
 export const getEssentialData = async (
-  selectedMonth?: string | null
+  selectedMonth?: string | null,
 ): Promise<EssentialData> => {
   const setSelectedMonth = selectedMonth
     ? selectedMonth
@@ -19,6 +19,7 @@ export const getEssentialData = async (
   if (cached) return cached;
 
   const token = await loadAccessToken();
+  console.log("!!!!!!!!! token", token);
   if (!token) {
     console.warn("No cached access token found.");
     throw new Error("No cached access token found.");
@@ -42,7 +43,7 @@ export const getEssentialData = async (
 
   const completedTransactions = data.transactions.filter((t) => !t.pending);
   const allTransactionSum = Number(
-    completedTransactions.reduce((sum, t) => sum + t.amount, 0).toFixed(2)
+    completedTransactions.reduce((sum, t) => sum + t.amount, 0).toFixed(2),
   );
 
   const enrichedData: EssentialData & {

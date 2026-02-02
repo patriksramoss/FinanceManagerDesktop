@@ -5,7 +5,11 @@
   -webkit-user-select: none;
   -moz-user-select: none;
   -ms-user-select: none;
-  font-family: "Manrope", -apple-system, BlinkMacSystemFont, "Roboto",
+  font-family:
+    "Manrope",
+    -apple-system,
+    BlinkMacSystemFont,
+    "Roboto",
     sans-serif;
   scrollbar-width: thin;
   scrollbar-color: #fe5d26ff #e7eaee;
@@ -13,14 +17,17 @@
 
 html.lenis {
   margin: 0;
+  height: 99%;
 }
 
 #root {
   width: 100%;
+  height: 100%;
 }
 
 body {
-  height: 100vh;
+  margin: 0;
+  height: 100%;
   background: $color-bg;
 }
 

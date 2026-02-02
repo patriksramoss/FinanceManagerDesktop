@@ -15,7 +15,7 @@ const secret = process.env.PLAID_SECRET;
 
 if (!clientId || !secret) {
   throw new Error(
-    "Plaid client ID or secret is missing in the environment variables."
+    "Plaid client ID or secret is missing in the environment variables.",
   );
 }
 
@@ -31,14 +31,44 @@ export const configuration = new Configuration({
 
 export const plaidClient = new PlaidApi(configuration);
 
+export const fixToken = async (req: Request, res: Response): Promise<void> => {
+  const { access_token } = req.body;
+
+  if (!access_token) {
+    res.status(400).json({ error: "Access token is required" });
+    return;
+  }
+
+  try {
+    const response = await plaidClient.linkTokenCreate({
+      user: {
+        client_user_id: "sandbox_user",
+      },
+      client_name: "Finance Manager",
+      country_codes: [CountryCode.Lv],
+      language: "lv",
+      access_token,
+    });
+
+    res.json({ link_token: response.data.link_token });
+  } catch (error) {
+    const axiosError = error as AxiosError;
+    console.error(
+      "Error creating update link token:",
+      axiosError.response?.data || axiosError.message || axiosError,
+    );
+    res.status(500).json({ error: "Failed to create update link token" });
+  }
+};
+
 export const createLinkToken = async (
   req: Request,
-  res: Response
+  res: Response,
 ): Promise<void> => {
   try {
     const request: LinkTokenCreateRequest = {
       user: {
-        client_user_id: "user123",
+        client_user_id: "patriks_id_123",
       },
       client_name: "Finance Manager",
       products: [Products.Transactions],
@@ -52,7 +82,7 @@ export const createLinkToken = async (
     const axiosError = error as AxiosError;
     console.error(
       "Error creating link token:",
-      axiosError.response?.data || axiosError.message || axiosError
+      axiosError.response?.data || axiosError.message || axiosError,
     );
     res.status(500).json({ error: "Failed to create link token" });
   }
@@ -60,7 +90,7 @@ export const createLinkToken = async (
 
 export const exchangePublicToken = async (
   req: Request,
-  res: Response
+  res: Response,
 ): Promise<void> => {
   const { public_token } = req.body;
 
@@ -71,6 +101,8 @@ export const exchangePublicToken = async (
     });
   }
 
+  console.log("1111111", public_token);
+
   try {
     const response = await plaidClient.itemPublicTokenExchange({
       public_token: public_token,
@@ -79,9 +111,11 @@ export const exchangePublicToken = async (
     const access_token = response.data.access_token;
     const item_id = response.data.item_id;
 
+    console.log("222222222", access_token);
+
     res.json({ access_token, item_id });
   } catch (error: any) {
-    console.error("Error exchanging public token:", error);
+    console.error("Error exchanging public token !!!!!!!!!!!:", error);
 
     if (error.response?.data?.error_code) {
       res.status(400).json({
@@ -95,7 +129,7 @@ export const exchangePublicToken = async (
 };
 export const getEssentialData = async (
   req: Request,
-  res: Response
+  res: Response,
 ): Promise<void> => {
   const { access_token, month } = req.body;
   if (!access_token) {
@@ -133,7 +167,7 @@ export const getEssentialData = async (
     const axiosError = error as AxiosError;
     console.error(
       "Error fetching essential Plaid data:",
-      axiosError.response?.data
+      axiosError.response?.data,
     );
     res.status(500).json({
       error: axiosError.response?.data || "Failed to fetch essential data",

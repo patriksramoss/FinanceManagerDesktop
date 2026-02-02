@@ -12,6 +12,8 @@ import dayjs from "dayjs";
 import Loader from "src/components/Loader/Loader";
 //stores
 import usePlaidStore from "src/stores/Plaid";
+// interfaces
+import { PlaidTransaction } from "src/api/plaid/types";
 
 const COLORS = [
   "#8884d8",
@@ -24,25 +26,27 @@ const COLORS = [
   "#d88884",
 ];
 
-const Chart = () => {
+type ChartProps = {
+  transactions: PlaidTransaction[];
+};
+
+const Chart: React.FC<ChartProps> = ({ transactions }) => {
   const [loadingChartData, setLoadingChartData] = useState<boolean>(false);
   const [categorizedData, setCategorizedData] = useState<any[]>([]);
   const selectedMonthDashboard = usePlaidStore(
-    (state) => state.selectedMonthDashboard || ""
+    (state) => state.selectedMonthDashboard || dayjs().format("YYYY-MM"),
   );
   const essentialData = usePlaidStore((state) =>
-    selectedMonthDashboard ? state.cache[selectedMonthDashboard] : undefined
+    selectedMonthDashboard ? state.cache[selectedMonthDashboard] : undefined,
   );
 
   useEffect(() => {
-    if (essentialData) {
-      processCategoryData(essentialData?.transactions, selectedMonthDashboard);
-    }
-  }, [selectedMonthDashboard]);
+    processCategoryData(transactions, selectedMonthDashboard);
+  }, [selectedMonthDashboard, transactions]);
 
   const processCategoryData = (transactions: any[], month: string) => {
     const filtered = transactions.filter(
-      (txn) => dayjs(txn.date).format("YYYY-MM") === month
+      (txn) => dayjs(txn.date).format("YYYY-MM") === month,
     );
 
     const summary: { [category: string]: number } = {};
@@ -61,6 +65,8 @@ const Chart = () => {
       value: parseFloat(value.toFixed(2)),
     }));
 
+    /// ------------- formatting and categorization
+
     const formattedData = data.map((entry) => ({
       ...entry,
       value: Math.abs(entry.value),
@@ -70,7 +76,24 @@ const Chart = () => {
         .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
         .join(" "),
     }));
-    setCategorizedData(formattedData);
+    const filteredData = formattedData.filter((item) => item.value > 0);
+    const threshold = 3;
+    const total = filteredData.reduce((sum, item) => sum + item.value, 0);
+
+    const main = [];
+    let otherValue = 0;
+
+    for (const item of filteredData) {
+      const pct = (item.value / total) * 100;
+      if (pct >= threshold) main.push(item);
+      else otherValue += item.value;
+    }
+
+    if (otherValue > 0) main.push({ name: "Other", value: otherValue });
+
+    /// -------------
+
+    setCategorizedData(main);
   };
 
   if (!essentialData)
@@ -97,13 +120,17 @@ const Chart = () => {
           <ResponsiveContainer>
             <PieChart>
               <Pie
+                innerRadius={70}
+                outerRadius={120}
                 data={categorizedData}
                 dataKey="value"
                 nameKey="name"
                 cx="50%"
                 cy="50%"
-                outerRadius={120}
-                label
+                labelLine={true}
+                label={({ name, percent }) =>
+                  `${name} ${(percent * 100).toFixed(0)}%`
+                }
                 isAnimationActive={false}
               >
                 {categorizedData.map((_, index) => (
@@ -113,7 +140,12 @@ const Chart = () => {
                   />
                 ))}
               </Pie>
-              <Tooltip />
+              <Tooltip
+                formatter={(value: number, name: string, props: any) => [
+                  `${value} EUR`,
+                  name,
+                ]}
+              />
               <Legend />
             </PieChart>
           </ResponsiveContainer>

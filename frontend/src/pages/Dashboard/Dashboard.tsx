@@ -6,13 +6,15 @@ import Insights from "./Content/Insights/Insights";
 import Header from "./Content/Header/Header";
 //stores
 import usePlaidStore from "src/stores/Plaid";
+//interfaces
+import { PlaidTransaction, EssentialData } from "src/api/plaid/types";
 
 const Dashboard: React.FC = () => {
   const selectedMonthDashboard = usePlaidStore(
-    (state) => state.selectedMonthDashboard || ""
+    (state) => state.selectedMonthDashboard || "",
   );
-  const essentialData = usePlaidStore((state) =>
-    selectedMonthDashboard ? state.cache[selectedMonthDashboard] : undefined
+  const essentialData: EssentialData = usePlaidStore(
+    (state) => state.cache[selectedMonthDashboard],
   );
   useEffect(() => {
     console.log("eeeesential data", essentialData?.dashboard.allTransactionSum);
@@ -23,7 +25,14 @@ const Dashboard: React.FC = () => {
         <Header />
       </div>
       <div className={styles.flexBox}>
+        <div className={styles.sideColumn}></div>
+        <div className={styles.mainColumn}>
+          <Chart transactions={essentialData?.transactions || []} />
+        </div>
+      </div>
+      <div className={styles.flexBox}>
         <div className={styles.sideColumn}>
+          {" "}
           <Card
             title="Monthly Spending"
             amount={essentialData?.dashboard.allTransactionSum || 0}
@@ -39,10 +48,10 @@ const Dashboard: React.FC = () => {
             trend="up"
           />
         </div>
-
         <div className={styles.mainColumn}>
-          <Chart />
-          <Insights />
+          <div className={styles.insights}>
+            <Insights />{" "}
+          </div>
         </div>
       </div>
     </div>

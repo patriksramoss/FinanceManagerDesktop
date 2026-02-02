@@ -4,6 +4,10 @@ export interface Transaction {
   date: string;
 }
 
+export interface Transactions {
+  transactions: Transaction[];
+}
+
 export interface PlaidSuccessMetadata {
   public_token: string;
   metadata: {

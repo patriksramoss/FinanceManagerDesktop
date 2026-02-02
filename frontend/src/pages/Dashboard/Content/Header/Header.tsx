@@ -14,15 +14,12 @@ const Header = () => {
   const [essentialData, setEssentialData] = useState<any>(null);
   const [loadingChartData, setLoadingChartData] = useState<boolean>(false);
   const loadAccessToken = useAuthStore((state) => state.loadAccessToken);
-  const [selectedMonth, setSelectedMonth] = useState<string>(
-    dayjs().format("YYYY-MM")
+  const selectedMonth = usePlaidStore(
+    (state) => state.selectedMonthDashboard || dayjs().format("YYYY-MM"),
   );
 
   const fetchTokenAndData = async () => {
-    console.log(
-      "selectedMonth fetchTokenAndDatafetchTokenAndDatafetchTokenAndData",
-      selectedMonth
-    );
+    console.log("selectedMonth ", selectedMonth);
     const token = await loadAccessToken();
     if (!token) {
       console.warn("No cached access token found.");
@@ -55,7 +52,6 @@ const Header = () => {
       direction === "prev"
         ? current.subtract(1, "month")
         : current.add(1, "month");
-    setSelectedMonth(newDate.format("YYYY-MM"));
     usePlaidStore
       .getState()
       .setSelectedMonthDashboard(newDate.format("YYYY-MM"));
@@ -70,9 +66,6 @@ const Header = () => {
 
   return (
     <div className={styles.header}>
-      {/* <div className={styles.headerBox}>
-        <h2>Dashboard</h2>
-      </div> */}
       <div className={styles.monthSwitcherBox}>
         <div
           className={`${styles.monthSwitcher} ${

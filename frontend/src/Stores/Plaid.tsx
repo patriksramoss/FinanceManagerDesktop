@@ -80,11 +80,12 @@ export const getAccessToken = async (publicToken: string): Promise<string> => {
   if (accessToken) return accessToken;
 
   const stored = await getCachedAccessToken();
+  console.log("Stored access token:", stored);
   if (stored) return stored;
 
   const response = await axios.post(
     `${backendUrl}/api/plaid/exchange-public-token`,
-    { public_token: publicToken }
+    { public_token: publicToken },
   );
 
   const newAccessToken = response.data.access_token;
