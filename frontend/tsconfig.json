@@ -1,24 +1,10 @@
-// {
-//   "files": [],
-//   "references": [
-//     { "path": "./frontend" },
-//     { "path": "./tsconfig.app.json" },
-//     { "path": "./tsconfig.node.json" }
-//   ],
-//   "compilerOptions": {
-//     "baseUrl": ".",
-//     "paths": {
-//       "src/*": ["../frontend/src/*"]
-//     }
-//   }
-// }
-
 {
   "extends": "./tsconfig.app.json",
   "compilerOptions": {
     "baseUrl": ".",
     "paths": {
-      "src/*": ["src/*"]
+      "src/*": ["src/*"],
+      "@/*": ["src/*"]
     }
   }
 }

@@ -4,6 +4,7 @@ import Chart from "./Content/Chart/Chart";
 import Card from "./Content/Card/Card";
 import Insights from "./Content/Insights/Insights";
 import Header from "./Content/Header/Header";
+import MiniCalendar from "./Content/MiniCalendar/MiniCalendar";
 //stores
 import usePlaidStore from "src/stores/Plaid";
 //interfaces
@@ -25,13 +26,15 @@ const Dashboard: React.FC = () => {
         <Header />
       </div>
       <div className={styles.flexBox}>
-        <div className={styles.sideColumn}></div>
+        <div className={styles.sideColumn}>
+          <MiniCalendar />
+        </div>
         <div className={styles.mainColumn}>
           <Chart transactions={essentialData?.transactions || []} />
         </div>
       </div>
       <div className={styles.flexBox}>
-        <div className={styles.sideColumn}>
+        {/* <div className={styles.sideColumn}>
           {" "}
           <Card
             title="Monthly Spending"
@@ -52,7 +55,7 @@ const Dashboard: React.FC = () => {
           <div className={styles.insights}>
             <Insights />{" "}
           </div>
-        </div>
+        </div> */}
       </div>
     </div>
   );
