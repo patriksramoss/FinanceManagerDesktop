@@ -25,8 +25,8 @@ const MiniCalendar: React.FC = () => {
 
   return (
     <div className="flex flex-col gap-[0.55rem]">
-      <Card className={`border border-none shadow-none w-full p-0`}>
-        <CardContent className="p-0">
+      <Card className={`border border-none shadow-none w-full h-full p-0 `}>
+        <CardContent className="p-0 h-full">
           <Calendar
             mode="single"
             selected={selectedDate}
@@ -34,7 +34,7 @@ const MiniCalendar: React.FC = () => {
             month={defaultMonth}
             numberOfMonths={1}
             hideNavigation={true}
-            className={`${styles.hideCaption} [--cell-size:--spacing(10)] w-full rounded-xl h-[540px] grid grid-rows-5 gap-1`}
+            className={`${styles.hideCaption} w-full h-full rounded-xl`}
             components={{
               DayButton: ({ day, modifiers, ...props }: any) => {
                 const k = format(day.date, "yyyy-MM-dd");
@@ -46,7 +46,11 @@ const MiniCalendar: React.FC = () => {
                     today.getMonth(),
                     today.getDate(),
                   );
-                const data = dayData[k] ?? { income: 0, expense: 0, notes: "" };
+                const data = dayData[k] ?? {
+                  income: 0,
+                  expense: 0,
+                  notes: "",
+                };
                 const sum = (data?.income ?? 0) - (data?.expense ?? 0);
 
                 let bg = "";
@@ -61,7 +65,7 @@ const MiniCalendar: React.FC = () => {
                     day={day}
                     modifiers={modifiers}
                     {...props}
-                    className={`relative ${bg} flex flex-col items-center justify-center`}
+                    className={`relative ${bg} flex flex-col items-center justify-center `}
                   >
                     <span>{day.date.getDate()}</span>
 
