@@ -6,7 +6,7 @@
   "scripts": {
     "build": "cd frontend && npm run build && cd ../backend && npm run build && cd ../electron && npm run build",
     "start": "concurrently \"cd frontend && npm run dev\" \"cd backend && npm run dev\" \"cd electron && npm run dev\"",
-    "node": "nvm use 20.5.0"
+    "node": "nvm use 24.13.0"
   },
   "build": {
     "appId": "com.patriks.finance-manager",

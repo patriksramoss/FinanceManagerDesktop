@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useMemo } from "react";
 import styles from "./Chart.module.scss";
 import {
   PieChart,
@@ -14,6 +14,8 @@ import Loader from "src/components/Loader/Loader";
 import usePlaidStore from "src/stores/Plaid";
 // interfaces
 import { PlaidTransaction } from "src/api/plaid/types";
+// utils
+import { processCategoryData } from "src/pages/Dashboard/utils/processCategoryData";
 
 const COLORS = [
   "#8884d8",
@@ -31,8 +33,7 @@ type ChartProps = {
 };
 
 const Chart: React.FC<ChartProps> = ({ transactions }) => {
-  const [loadingChartData, setLoadingChartData] = useState<boolean>(false);
-  const [categorizedData, setCategorizedData] = useState<any[]>([]);
+  const [loadingChartData] = useState<boolean>(false);
   const selectedMonthDashboard = usePlaidStore(
     (state) => state.selectedMonthDashboard || dayjs().format("YYYY-MM"),
   );
@@ -40,61 +41,9 @@ const Chart: React.FC<ChartProps> = ({ transactions }) => {
     selectedMonthDashboard ? state.cache[selectedMonthDashboard] : undefined,
   );
 
-  useEffect(() => {
-    processCategoryData(transactions, selectedMonthDashboard);
-  }, [selectedMonthDashboard, transactions]);
-
-  const processCategoryData = (transactions: any[], month: string) => {
-    const filtered = transactions.filter(
-      (txn) => dayjs(txn.date).format("YYYY-MM") === month,
-    );
-
-    const summary: { [category: string]: number } = {};
-
-    filtered.forEach((txn) => {
-      const category =
-        txn.personal_finance_category?.primary ||
-        txn.merchant_name ||
-        "Uncategorized";
-
-      summary[category] = (summary[category] || 0) + txn.amount;
-    });
-
-    const data = Object.entries(summary).map(([name, value]) => ({
-      name,
-      value: parseFloat(value.toFixed(2)),
-    }));
-
-    /// ------------- formatting and categorization
-
-    const formattedData = data.map((entry) => ({
-      ...entry,
-      value: Math.abs(entry.value),
-      name: entry.name
-        .toLowerCase()
-        .split("_")
-        .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-        .join(" "),
-    }));
-    const filteredData = formattedData.filter((item) => item.value > 0);
-    const threshold = 3;
-    const total = filteredData.reduce((sum, item) => sum + item.value, 0);
-
-    const main = [];
-    let otherValue = 0;
-
-    for (const item of filteredData) {
-      const pct = (item.value / total) * 100;
-      if (pct >= threshold) main.push(item);
-      else otherValue += item.value;
-    }
-
-    if (otherValue > 0) main.push({ name: "Other", value: otherValue });
-
-    /// -------------
-
-    setCategorizedData(main);
-  };
+  const categorizedData = useMemo(() => {
+    return processCategoryData(transactions, selectedMonthDashboard);
+  }, [transactions, selectedMonthDashboard]);
 
   if (!essentialData)
     return (
@@ -107,13 +56,13 @@ const Chart: React.FC<ChartProps> = ({ transactions }) => {
   return (
     <div className={styles["essential-data"]}>
       <h2>Summary</h2>
-      {essentialData.transactions.length === 0 && loadingChartData ? (
+      {loadingChartData ? (
         <div style={{ width: "100%", height: 400 }}>
           <div className={styles.loadingData}>
-            <Loader loading={true} />
+            <Loader loading />
           </div>
         </div>
-      ) : essentialData.transactions.length === 0 && !loadingChartData ? (
+      ) : essentialData.transactions.length === 0 ? (
         <div className={styles.noData}>No Data</div>
       ) : (
         <div style={{ width: "100%", height: 400 }}>
@@ -141,7 +90,7 @@ const Chart: React.FC<ChartProps> = ({ transactions }) => {
                 ))}
               </Pie>
               <Tooltip
-                formatter={(value: number, name: string, props: any) => [
+                formatter={(value: number, name: string) => [
                   `${value} EUR`,
                   name,
                 ]}

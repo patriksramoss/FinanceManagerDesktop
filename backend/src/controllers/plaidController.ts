@@ -101,8 +101,6 @@ export const exchangePublicToken = async (
     });
   }
 
-  console.log("1111111", public_token);
-
   try {
     const response = await plaidClient.itemPublicTokenExchange({
       public_token: public_token,
@@ -110,8 +108,6 @@ export const exchangePublicToken = async (
 
     const access_token = response.data.access_token;
     const item_id = response.data.item_id;
-
-    console.log("222222222", access_token);
 
     res.json({ access_token, item_id });
   } catch (error: any) {
@@ -157,6 +153,10 @@ export const getEssentialData = async (
           options: { count: 500, offset: 0 },
         }),
       ]);
+
+    console.log("accountsResponse !!!!", accountsResponse.data);
+    // console.log("identityResponse", identityResponse);
+    // console.log("transactionsResponse", transactionsResponse);
 
     res.json({
       accounts: accountsResponse.data.accounts,

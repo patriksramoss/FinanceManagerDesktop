@@ -52,15 +52,6 @@ const App: React.FC = () => {
           <Routes>
             <Route path="/netWorth" element={<NetWorth />} />
           </Routes>
-          <Routes>
-            <Route path="/transactions" element={<Transactions />} />
-          </Routes>
-          <Routes>
-            <Route path="/budgets" element={<Budgets />} />
-          </Routes>
-          <Routes>
-            <Route path="/reports" element={<Reports />} />
-          </Routes>
         </>
       )}
     </>

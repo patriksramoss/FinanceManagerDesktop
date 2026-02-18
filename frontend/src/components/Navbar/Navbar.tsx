@@ -12,14 +12,21 @@ const Navbar: React.FC<NavbarProps> = ({ onLogout }) => {
   return (
     <div className={styles.navbarContainer}>
       <div className={styles.logoWrapper}>
-        <img src={logoImg} alt="Logo" className={styles.logo} />
+        <img
+          src={logoImg}
+          alt="Logo"
+          className={styles.logo}
+          onClick={() => {
+            window.location.href = "/dashboard";
+          }}
+        />
       </div>
       <>
         <nav className={styles.navbar}>
           <NavLink
             to="/dashboard"
             className={({ isActive }) =>
-              `${styles.navItem} ${isActive ? styles.active : ""}`
+              `${styles.navItem} ${isActive || window.location.pathname === "/" ? styles.active : ""}`
             }
           >
             Dashboard
@@ -31,30 +38,6 @@ const Navbar: React.FC<NavbarProps> = ({ onLogout }) => {
             }
           >
             Net Worth
-          </NavLink>
-          <NavLink
-            to="/transactions"
-            className={({ isActive }) =>
-              `${styles.navItem} ${isActive ? styles.active : ""}`
-            }
-          >
-            Transactions
-          </NavLink>
-          <NavLink
-            to="/budgets"
-            className={({ isActive }) =>
-              `${styles.navItem} ${isActive ? styles.active : ""}`
-            }
-          >
-            Budgets
-          </NavLink>
-          <NavLink
-            to="/reports"
-            className={({ isActive }) =>
-              `${styles.navItem} ${isActive ? styles.active : ""}`
-            }
-          >
-            Reports
           </NavLink>
         </nav>
         <div className={styles.logoutButtonWrapper}>

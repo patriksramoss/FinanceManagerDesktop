@@ -1,49 +1,22 @@
-import { useState, useEffect } from "react";
 import styles from "./Header.module.scss";
-import useAuthStore from "src/stores/Auth";
 import dayjs from "dayjs";
-import Loader from "src/components/Loader/Loader";
-//apis
-import { plaidController } from "src/api/plaid/index";
+import { useEffect } from "react";
 //icons
 import { FaArrowAltCircleRight, FaArrowAltCircleLeft } from "react-icons/fa";
+import { SelectField } from "src/components/Select/SelectField";
 //stores
 import usePlaidStore from "src/stores/Plaid";
 
 const Header = () => {
-  const [essentialData, setEssentialData] = useState<any>(null);
-  const [loadingChartData, setLoadingChartData] = useState<boolean>(false);
-  const loadAccessToken = useAuthStore((state) => state.loadAccessToken);
   const selectedMonth = usePlaidStore(
     (state) => state.selectedMonthDashboard || dayjs().format("YYYY-MM"),
   );
-
-  const fetchTokenAndData = async () => {
-    console.log("selectedMonth ", selectedMonth);
-    const token = await loadAccessToken();
-    if (!token) {
-      console.warn("No cached access token found.");
-      return;
-    }
-    try {
-      setLoadingChartData(true);
-      const data = await plaidController.getEssentialData(selectedMonth);
-      if (!data) {
-        setLoadingChartData(false);
-        return;
-      }
-      setLoadingChartData(false);
-      setEssentialData(data);
-      usePlaidStore.getState().setEssentialData(selectedMonth, data);
-      console.log(usePlaidStore.getState().cache);
-      // processCategoryData(data.transactions, selectedMonth);
-    } catch (error) {
-      console.error("Error fetching essential data:", error);
-    }
-  };
+  const essentialData = usePlaidStore((state) =>
+    selectedMonth ? state.cache[selectedMonth] : undefined,
+  );
 
   useEffect(() => {
-    fetchTokenAndData();
+    console.log("selectedMonth", selectedMonth);
   }, [selectedMonth]);
 
   const changeMonth = (direction: "prev" | "next") => {
@@ -57,31 +30,40 @@ const Header = () => {
       .setSelectedMonthDashboard(newDate.format("YYYY-MM"));
   };
 
-  if (!essentialData)
-    return (
-      <div className={styles.header}>
-        <Loader loading={true} />
-      </div>
-    );
-
   return (
-    <div className={styles.header}>
-      <div className={styles.monthSwitcherBox}>
-        <div
-          className={`${styles.monthSwitcher} ${
-            loadingChartData ? styles.loading : ""
-          }`}
-        >
-          <button onClick={() => changeMonth("prev")}>
-            <FaArrowAltCircleLeft />
-          </button>
-          <span>{dayjs(selectedMonth + "-01").format("MMMM YYYY")}</span>
-          <button onClick={() => changeMonth("next")}>
-            <FaArrowAltCircleRight />
-          </button>
+    <>
+      <div className={styles.header}>
+        <div className={styles.monthSwitcherBox}>
+          <div
+            className={`${styles.monthSwitcher} ${
+              !essentialData ? styles.loading : ""
+            }`}
+          >
+            <button onClick={() => changeMonth("prev")}>
+              <FaArrowAltCircleLeft />
+            </button>
+            <span>{dayjs(selectedMonth + "-01").format("MMMM YYYY")}</span>
+            <button onClick={() => changeMonth("next")}>
+              <FaArrowAltCircleRight />
+            </button>
+          </div>
         </div>
       </div>
-    </div>
+      <div className={`flex flex-row h-[2rem] gap-2`}>
+        <SelectField label="Account">
+          <option value="all">All Accounts</option>
+          <option value="checking">Checking</option>
+          <option value="savings">Savings</option>
+          <option value="credit">Credit</option>
+          <option value="loan">Loan</option>
+        </SelectField>
+        <SelectField label="Category">
+          <option value="personal">Personal</option>
+          <option value="business">Business</option>
+          <option value="combined">Combined</option>
+        </SelectField>
+      </div>
+    </>
   );
 };
 
