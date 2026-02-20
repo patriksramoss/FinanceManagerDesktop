@@ -24,7 +24,7 @@ const MiniCalendar: React.FC = () => {
     : new Date();
 
   return (
-    <div className="flex flex-col gap-[0.55rem]">
+    <div className="flex flex-col gap-2">
       <Card className={`border border-none shadow-none w-full h-full p-0 `}>
         <CardContent className="p-0 h-full">
           <Calendar
@@ -34,7 +34,7 @@ const MiniCalendar: React.FC = () => {
             month={defaultMonth}
             numberOfMonths={1}
             hideNavigation={true}
-            className={`${styles.hideCaption} w-full h-full rounded-xl`}
+            className={`${styles.calendarStyles} w-full h-full rounded-xl`}
             components={{
               DayButton: ({ day, modifiers, ...props }: any) => {
                 const k = format(day.date, "yyyy-MM-dd");

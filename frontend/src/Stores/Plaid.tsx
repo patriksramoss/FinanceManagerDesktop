@@ -1,6 +1,7 @@
 import axios from "axios";
 import { create } from "zustand";
 import { EssentialData, PlaidAccount } from "src/api/plaid/types";
+import dayjs from "dayjs";
 const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
 let accessToken: string | null = null;
@@ -9,6 +10,8 @@ interface PlaidStore {
   cache: Record<string, EssentialData>;
   cacheAccounts: PlaidAccount;
   selectedMonthDashboard: string | null;
+  selectedAccountDashboard: string | null;
+  selectedCategoryDashboard: string | null;
   accounts: PlaidAccount[] | null;
   accountsLoading: boolean;
   accountsError: string | null;
@@ -18,6 +21,8 @@ interface PlaidStore {
   setAccounts: (data: PlaidAccount[]) => void;
   setAccountsLoading: (loading: boolean) => void;
   setSelectedMonthDashboard: (month: string) => void;
+  setSelectedAccountDashboard: (account_id: string) => void;
+  setSelectedCategoryDashboard: (category: string) => void;
   clearCache: () => void;
 }
 
@@ -38,7 +43,9 @@ const usePlaidStore = create<PlaidStore>((set, get) => ({
     subtype: "",
     type: "",
   },
-  selectedMonthDashboard: null,
+  selectedMonthDashboard: dayjs().format("YYYY-MM"),
+  selectedAccountDashboard: null,
+  selectedCategoryDashboard: null,
   accounts: [],
   accountsLoading: false,
   accountsError: null,
@@ -47,7 +54,12 @@ const usePlaidStore = create<PlaidStore>((set, get) => ({
     set((state) => ({
       cache: { ...state.cache, [month]: data },
     })),
-  setSelectedMonthDashboard: (month) => set({ selectedMonthDashboard: month }),
+  setSelectedAccountDashboard: (account_id) =>
+    set({ selectedAccountDashboard: account_id }),
+  setSelectedCategoryDashboard: (category) =>
+    set({ selectedCategoryDashboard: category }),
+  setSelectedMonthDashboard: (month) =>
+    set({ selectedMonthDashboard: month || dayjs().format("YYYY-MM") }),
   getAccounts: () => get().accounts,
 
   setAccounts: (data) =>

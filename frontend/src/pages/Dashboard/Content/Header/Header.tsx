@@ -1,23 +1,34 @@
+import { useMemo } from "react";
 import styles from "./Header.module.scss";
 import dayjs from "dayjs";
-import { useEffect } from "react";
 //icons
 import { FaArrowAltCircleRight, FaArrowAltCircleLeft } from "react-icons/fa";
 import { SelectField } from "src/components/Select/SelectField";
 //stores
 import usePlaidStore from "src/stores/Plaid";
+import { getFilteredEssentialData } from "src/utils/filterEssentialData";
 
 const Header = () => {
+  const cache = usePlaidStore((s) => s.cache);
   const selectedMonth = usePlaidStore(
-    (state) => state.selectedMonthDashboard || dayjs().format("YYYY-MM"),
+    (s) => s.selectedMonthDashboard ?? dayjs().format("YYYY-MM"),
   );
-  const essentialData = usePlaidStore((state) =>
-    selectedMonth ? state.cache[selectedMonth] : undefined,
+  const selectedAccount = usePlaidStore((s) => s.selectedAccountDashboard);
+  const setSelectedAccount = usePlaidStore(
+    (s) => s.setSelectedAccountDashboard,
   );
+  const selectedCategory = usePlaidStore((s) => s.selectedCategoryDashboard);
 
-  useEffect(() => {
-    console.log("selectedMonth", selectedMonth);
-  }, [selectedMonth]);
+  const essentialData = useMemo(() => {
+    const month = selectedMonth ?? dayjs().format("YYYY-MM");
+    return getFilteredEssentialData(
+      cache[month],
+      selectedAccount,
+      selectedCategory,
+    );
+  }, [cache, selectedMonth, selectedAccount, selectedCategory]);
+
+  const accounts = cache[selectedMonth]?.accounts ?? [];
 
   const changeMonth = (direction: "prev" | "next") => {
     const current = dayjs(selectedMonth + "-01");
@@ -49,19 +60,19 @@ const Header = () => {
           </div>
         </div>
       </div>
-      <div className={`flex flex-row h-[2rem] gap-2`}>
-        <SelectField label="Account">
-          <option value="all">All Accounts</option>
-          <option value="checking">Checking</option>
-          <option value="savings">Savings</option>
-          <option value="credit">Credit</option>
-          <option value="loan">Loan</option>
-        </SelectField>
-        <SelectField label="Category">
-          <option value="personal">Personal</option>
-          <option value="business">Business</option>
-          <option value="combined">Combined</option>
-        </SelectField>
+      <div className="flex flex-row h-[2rem] gap-2">
+        <SelectField
+          label="Account"
+          value={selectedAccount ?? "all"}
+          onChange={setSelectedAccount}
+          options={[
+            { value: "all", label: "All" },
+            ...accounts.map((a) => ({
+              value: a.account_id,
+              label: `${a.name} (${a.subtype}) •••• ${a.mask}`,
+            })),
+          ]}
+        />
       </div>
     </>
   );

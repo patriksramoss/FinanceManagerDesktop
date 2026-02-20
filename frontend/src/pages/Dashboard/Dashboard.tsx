@@ -1,5 +1,4 @@
 import React, { useEffect } from "react";
-import styles from "./Dashboard.module.scss";
 import dayjs from "dayjs";
 // components
 import Chart from "./Content/Chart/Chart";
@@ -8,17 +7,12 @@ import MiniCalendar from "./Content/MiniCalendar/MiniCalendar";
 import SummaryRow from "./Content/Summary/SummaryRow";
 //stores
 import usePlaidStore from "src/stores/Plaid";
-//interfaces
-import { EssentialData } from "src/api/plaid/types";
 //utils
 import { fetchTokenAndData } from "src/pages/Dashboard/utils/fetchTokenAndData";
 
 const Dashboard: React.FC = () => {
   const selectedMonthDashboard = usePlaidStore(
     (state) => state.selectedMonthDashboard || dayjs().format("YYYY-MM"),
-  );
-  const essentialData: EssentialData = usePlaidStore(
-    (state) => state.cache[selectedMonthDashboard],
   );
 
   useEffect(() => {
@@ -32,20 +26,19 @@ const Dashboard: React.FC = () => {
   }, [selectedMonthDashboard]);
 
   return (
-    <div className={styles.summaryContainer}>
-      <div className={styles.headerWrapper}>
+    <div className="flex flex-col items-center p-8 m-4 relative">
+      <div className="flex flex-row items-center justify-between w-full my-4 relative">
         <Header />
       </div>
-      <div className={styles.flexBox}>
-        <div className={styles.sideColumn}>
+      <div className="flex flex-row justify-between w-full gap-4 max-[1050px]:flex-col-reverse">
+        <div className="flex flex-col gap-2 w-[30%] max-[1050px]:w-full">
           <SummaryRow />
           <MiniCalendar />
         </div>
-        <div className={styles.mainColumn}>
-          <Chart transactions={essentialData?.transactions || []} />
+        <div className="flex flex-col gap-8 w-[70%] max-[1050px]:w-full">
+          <Chart />
         </div>
       </div>
-      <div className={styles.flexBox}></div>
     </div>
   );
 };

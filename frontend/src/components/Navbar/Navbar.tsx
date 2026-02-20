@@ -32,12 +32,12 @@ const Navbar: React.FC<NavbarProps> = ({ onLogout }) => {
             Dashboard
           </NavLink>
           <NavLink
-            to="/netWorth"
+            to="/reports"
             className={({ isActive }) =>
               `${styles.navItem} ${isActive ? styles.active : ""}`
             }
           >
-            Net Worth
+            Reports
           </NavLink>
         </nav>
         <div className={styles.logoutButtonWrapper}>

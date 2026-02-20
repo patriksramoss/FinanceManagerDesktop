@@ -2,9 +2,6 @@ import React, { useEffect } from "react";
 import { Routes, Route, useNavigate } from "react-router-dom";
 import Auth from "./pages/Auth/Auth";
 import Dashboard from "./pages/Dashboard/Dashboard";
-import Budgets from "./pages/Budgets/Budgets";
-import NetWorth from "./pages/NetWorth/NetWorth";
-import Transactions from "./pages/Transactions/Transactions";
 import Reports from "./pages/Reports/Reports";
 
 import useAuthStore from "./stores/Auth";
@@ -50,7 +47,7 @@ const App: React.FC = () => {
             <Route path="/dashboard" element={<Dashboard />} />
           </Routes>
           <Routes>
-            <Route path="/netWorth" element={<NetWorth />} />
+            <Route path="/reports" element={<Reports />} />
           </Routes>
         </>
       )}

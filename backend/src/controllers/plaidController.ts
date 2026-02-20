@@ -154,7 +154,7 @@ export const getEssentialData = async (
         }),
       ]);
 
-    console.log("accountsResponse !!!!", accountsResponse.data);
+    // console.log("accountsResponse !!!!", accountsResponse.data);
     // console.log("identityResponse", identityResponse);
     // console.log("transactionsResponse", transactionsResponse);
 

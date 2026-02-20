@@ -1,6 +1,9 @@
 import dayjs from "dayjs";
 
-export const processCategoryData = (transactions: any[], month: string) => {
+export const processCategoryData = (
+  transactions: any[],
+  month: string | null,
+) => {
   const filtered = transactions.filter(
     (txn) => dayjs(txn.date).format("YYYY-MM") === month,
   );

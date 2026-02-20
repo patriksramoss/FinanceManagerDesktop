@@ -1,8 +1,7 @@
-.hideCaption :global(.rdp-month_caption) {
+.calendarStyles :global(.rdp-month_caption) {
   display: none;
 }
 
-.card {
-  box-shadow: none;
-  border: none;
+.calendarStyles tr {
+  gap: 0.25rem;
 }

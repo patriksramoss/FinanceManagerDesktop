@@ -12,10 +12,9 @@ import dayjs from "dayjs";
 import Loader from "src/components/Loader/Loader";
 //stores
 import usePlaidStore from "src/stores/Plaid";
-// interfaces
-import { PlaidTransaction } from "src/api/plaid/types";
 // utils
 import { processCategoryData } from "src/pages/Dashboard/utils/processCategoryData";
+import { getFilteredEssentialData } from "src/utils/filterEssentialData";
 
 const COLORS = [
   "#8884d8",
@@ -28,36 +27,40 @@ const COLORS = [
   "#d88884",
 ];
 
-type ChartProps = {
-  transactions: PlaidTransaction[];
-};
-
-const Chart: React.FC<ChartProps> = ({ transactions }) => {
+const Chart = () => {
   const [loadingChartData] = useState<boolean>(false);
-  const selectedMonthDashboard = usePlaidStore(
-    (state) => state.selectedMonthDashboard || dayjs().format("YYYY-MM"),
-  );
-  const essentialData = usePlaidStore((state) =>
-    selectedMonthDashboard ? state.cache[selectedMonthDashboard] : undefined,
-  );
+  const cache = usePlaidStore((s) => s.cache);
+  const selectedMonth = usePlaidStore((s) => s.selectedMonthDashboard);
+  const selectedAccount = usePlaidStore((s) => s.selectedAccountDashboard);
+  const selectedCategory = usePlaidStore((s) => s.selectedCategoryDashboard);
+
+  const essentialData = useMemo(() => {
+    const month = selectedMonth ?? dayjs().format("YYYY-MM");
+    return getFilteredEssentialData(
+      cache[month],
+      selectedAccount,
+      selectedCategory,
+    );
+  }, [cache, selectedMonth, selectedAccount, selectedCategory]);
 
   const categorizedData = useMemo(() => {
-    return processCategoryData(transactions, selectedMonthDashboard);
-  }, [transactions, selectedMonthDashboard]);
+    return processCategoryData(
+      essentialData?.transactions ?? [],
+      selectedMonth,
+    );
+  }, [essentialData, selectedMonth]);
 
   if (!essentialData)
     return (
       <div className={styles["essential-data"]}>
-        <h2>Summary</h2>
         <Loader loading={true} />
       </div>
     );
 
   return (
     <div className={styles["essential-data"]}>
-      <h2>Summary</h2>
       {loadingChartData ? (
-        <div style={{ width: "100%", height: 400 }}>
+        <div className="w-full h-[400px]">
           <div className={styles.loadingData}>
             <Loader loading />
           </div>
@@ -65,12 +68,12 @@ const Chart: React.FC<ChartProps> = ({ transactions }) => {
       ) : essentialData.transactions.length === 0 ? (
         <div className={styles.noData}>No Data</div>
       ) : (
-        <div style={{ width: "100%", height: 400 }}>
+        <div className="w-full h-[400px]">
           <ResponsiveContainer>
             <PieChart>
               <Pie
-                innerRadius={70}
-                outerRadius={120}
+                innerRadius={80}
+                outerRadius={160}
                 data={categorizedData}
                 dataKey="value"
                 nameKey="name"
