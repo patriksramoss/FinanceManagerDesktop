@@ -1,5 +1,4 @@
 import React from "react";
-import styles from "./Card.module.scss";
 
 interface CardProps {
   title: string;
@@ -17,12 +16,18 @@ const Card: React.FC<CardProps> = ({
   trend,
 }) => {
   return (
-    <div className={styles.card}>
-      <p className={styles.title}>{title}</p>
-      <p className={styles.amount}>{amount}</p>
-      <div className={styles.details}>
+    <div className="bg-white border border-gray-300 rounded-lg p-5">
+      <p className="text-sm text-gray-500">{title}</p>
+      <p className="text-2xl font-bold my-2">{amount}</p>
+      <div className="flex justify-between text-xs text-gray-400">
         <span>{subtitle}</span>
-        <span className={trend === "up" ? styles.up : styles.down}>
+        <span
+          className={
+            trend === "up"
+              ? "text-green-600 font-semibold"
+              : "text-red-600 font-semibold"
+          }
+        >
           {change}
         </span>
       </div>

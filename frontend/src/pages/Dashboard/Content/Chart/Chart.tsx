@@ -50,23 +50,18 @@ const Chart = () => {
     );
   }, [essentialData, selectedMonth]);
 
-  if (!essentialData)
-    return (
-      <div className={styles["essential-data"]}>
-        <Loader loading={true} />
-      </div>
-    );
-
   return (
-    <div className={styles["essential-data"]}>
-      {loadingChartData ? (
-        <div className="w-full h-[400px]">
-          <div className={styles.loadingData}>
-            <Loader loading />
-          </div>
+    <div className="flex flex-col items-center justify-center p-5 mx-4 rounded-lg border border-gray-300 bg-white h-[700px] relative">
+      {!essentialData ? (
+        <Loader loading={true} />
+      ) : loadingChartData ? (
+        <div className="w-full h-[400px] flex items-center justify-center relative top-12">
+          <Loader loading />
         </div>
       ) : essentialData.transactions.length === 0 ? (
-        <div className={styles.noData}>No Data</div>
+        <div className="w-full h-[400px] flex items-center justify-center text-gray-500">
+          No Data
+        </div>
       ) : (
         <div className="w-full h-[400px]">
           <ResponsiveContainer>

@@ -1,5 +1,4 @@
 import { useMemo } from "react";
-import styles from "./Header.module.scss";
 import dayjs from "dayjs";
 //icons
 import { FaArrowAltCircleRight, FaArrowAltCircleLeft } from "react-icons/fa";
@@ -42,25 +41,36 @@ const Header = () => {
   };
 
   return (
-    <>
-      <div className={styles.header}>
-        <div className={styles.monthSwitcherBox}>
-          <div
-            className={`${styles.monthSwitcher} ${
-              !essentialData ? styles.loading : ""
-            }`}
+    <div className="flex flex-col sm:flex-row items-center w-full justify-between gap-3 p-4 sm:p-6 rounded-xl text-textWhite">
+      <div className="flex flex-row items-center justify-center sm:justify-start pr-0 sm:pr-8 rounded-xl text-text">
+        <div
+          className={`flex items-center bg-white/10 rounded-[30px] px-2 py-1  select-none ${
+            !essentialData
+              ? "opacity-60 pointer-events-none filter brightness-[0.9] saturate-[0.8] transition-opacity"
+              : ""
+          }`}
+        >
+          <button
+            onClick={() => changeMonth("prev")}
+            className="bg-transparent border-none text-text text-xl w-9 h-9 flex items-center justify-center rounded-full transition-colors hover:bg-white/20 hover:text-accentSolid focus:outline-2 focus:outline-offset-2 focus:outline-blue-300"
           >
-            <button onClick={() => changeMonth("prev")}>
-              <FaArrowAltCircleLeft />
-            </button>
-            <span>{dayjs(selectedMonth + "-01").format("MMMM YYYY")}</span>
-            <button onClick={() => changeMonth("next")}>
-              <FaArrowAltCircleRight />
-            </button>
-          </div>
+            <FaArrowAltCircleLeft />
+          </button>
+
+          <span className="mx-4 font-semibold text-base text-center min-w-[140px]">
+            {dayjs(selectedMonth + "-01").format("MMMM YYYY")}
+          </span>
+
+          <button
+            onClick={() => changeMonth("next")}
+            className="bg-transparent border-none text-text text-xl w-9 h-9 flex items-center justify-center rounded-full transition-colors hover:bg-white/20 hover:text-accentSolid focus:outline-2 focus:outline-offset-2 focus:outline-blue-300"
+          >
+            <FaArrowAltCircleRight />
+          </button>
         </div>
       </div>
-      <div className="flex flex-row h-[2rem] gap-2">
+
+      <div className="flex flex-row h-8 gap-2 w-full sm:w-auto mt-2 sm:mt-0">
         <SelectField
           label="Account"
           value={selectedAccount ?? "all"}
@@ -74,7 +84,7 @@ const Header = () => {
           ]}
         />
       </div>
-    </>
+    </div>
   );
 };
 
