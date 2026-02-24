@@ -32,7 +32,6 @@ html.lenis {
 body {
   margin: 0;
   height: 100%;
-  background: $color-bg;
 }
 
 input,
@@ -41,10 +40,6 @@ textarea {
   -webkit-user-select: text;
   -moz-user-select: text;
   -ms-user-select: text;
-}
-
-.border {
-  border: 1px solid $color-border;
 }
 
 @layer base {

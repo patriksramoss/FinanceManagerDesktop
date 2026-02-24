@@ -13,7 +13,7 @@ import Loader from "src/components/Loader/Loader";
 interface PlaidLinkButtonProps {
   onSuccess: (
     access_token: string,
-    metadata: PlaidLinkOnSuccessMetadata
+    metadata: PlaidLinkOnSuccessMetadata,
   ) => void;
 }
 
@@ -30,7 +30,7 @@ const PlaidLinkButton: React.FC<PlaidLinkButtonProps> = ({ onSuccess }) => {
     token: token!,
     onSuccess: async (
       public_token: string,
-      metadata: PlaidLinkOnSuccessMetadata
+      metadata: PlaidLinkOnSuccessMetadata,
     ) => {
       console.log("Public Token:", public_token);
       console.log("Metadata:", metadata);
@@ -63,12 +63,12 @@ const PlaidLinkButton: React.FC<PlaidLinkButtonProps> = ({ onSuccess }) => {
 
       console.log(
         "BACKEND URL FETCH LINK TOKEN",
-        `${backendUrl}/api/plaid/create-link-token`
+        `${backendUrl}/api/plaid/create-link-token`,
       );
 
       try {
         const response = await fetch(
-          `${backendUrl}/api/plaid/create-link-token`
+          `${backendUrl}/api/plaid/create-link-token`,
         );
         if (!response.ok) {
           throw new Error(`HTTP error! Status: ${response.status}`);
@@ -89,13 +89,36 @@ const PlaidLinkButton: React.FC<PlaidLinkButtonProps> = ({ onSuccess }) => {
   return (
     <div>
       <Loader loading={loading} />
-      {!loading && fetchError && <div className="error">{fetchError}</div>}
+
+      {!loading && fetchError && (
+        <div className="text-sm text-red-600 mt-2">{fetchError}</div>
+      )}
+
       {!loading && !fetchError && (
-        <button onClick={() => open()} disabled={!ready || loading}>
+        <button
+          onClick={() => open()}
+          disabled={!ready || loading}
+          className="
+        flex flex-col items-center
+        px-[18px] py-2
+        rounded-md border-none
+        text-white
+        bg-gradient-to-b from-[#4b91f7] to-[#367af6]
+        shadow-[0px_0.5px_1.5px_rgba(54,122,246,0.25),inset_0px_0.8px_0px_-0.25px_rgba(255,255,255,0.2)]
+        transition-transform duration-150
+        hover:scale-105
+        focus:outline-none
+        focus:shadow-[inset_0px_0.8px_0px_-0.25px_rgba(255,255,255,0.2),0px_0.5px_1.5px_rgba(54,122,246,0.25),0px_0px_0px_3.5px_rgba(58,108,217,0.5)]
+        disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100
+      "
+        >
           Connect with Plaid
         </button>
       )}
-      {error && <div className="error">Error: {error.message}</div>}
+
+      {error && (
+        <div className="text-sm text-red-600 mt-2">Error: {error.message}</div>
+      )}
     </div>
   );
 };

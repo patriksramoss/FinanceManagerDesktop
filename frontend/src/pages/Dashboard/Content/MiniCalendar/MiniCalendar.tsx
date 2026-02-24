@@ -4,7 +4,6 @@ import { Card, CardContent } from "@/components/ui/card";
 import { format, parseISO } from "date-fns";
 import usePlaidStore from "src/stores/Plaid";
 import { MiniCalendarForm } from "./MiniCalendarForm";
-import styles from "./MiniCalendar.module.scss";
 import { truncateNumber } from "src/utils/truncateNumbers";
 
 type DayData = {
@@ -34,7 +33,7 @@ const MiniCalendar: React.FC = () => {
             month={defaultMonth}
             numberOfMonths={1}
             hideNavigation={true}
-            className={`${styles.calendarStyles} w-full h-full rounded-xl`}
+            className={`w-full h-full rounded-xl`}
             components={{
               DayButton: ({ day, modifiers, ...props }: any) => {
                 const k = format(day.date, "yyyy-MM-dd");

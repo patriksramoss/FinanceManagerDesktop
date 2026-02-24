@@ -35,6 +35,8 @@ const App: React.FC = () => {
     autoRaf: true,
   });
 
+  console.log("Using Lenis!", lenis);
+
   return (
     <>
       {isAuthenticated && <Navbar onLogout={handleLogout} />}

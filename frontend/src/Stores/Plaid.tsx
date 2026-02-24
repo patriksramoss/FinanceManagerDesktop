@@ -14,12 +14,14 @@ interface PlaidStore {
   selectedCategoryDashboard: string | null;
   accounts: PlaidAccount[] | null;
   accountsLoading: boolean;
+  essentialDataLoading: boolean;
   accountsError: string | null;
   getEssentialData: (month: string) => EssentialData | undefined;
   setEssentialData: (month: string, data: EssentialData) => void;
   getAccounts: () => PlaidAccount[] | null;
   setAccounts: (data: PlaidAccount[]) => void;
   setAccountsLoading: (loading: boolean) => void;
+  setEssentialDataLoading: (loading: boolean) => void;
   setSelectedMonthDashboard: (month: string) => void;
   setSelectedAccountDashboard: (account_id: string) => void;
   setSelectedCategoryDashboard: (category: string) => void;
@@ -48,6 +50,7 @@ const usePlaidStore = create<PlaidStore>((set, get) => ({
   selectedCategoryDashboard: null,
   accounts: [],
   accountsLoading: false,
+  essentialDataLoading: false,
   accountsError: null,
   getEssentialData: (month) => get().cache[month],
   setEssentialData: (month, data) =>
@@ -67,6 +70,8 @@ const usePlaidStore = create<PlaidStore>((set, get) => ({
       accounts: data,
     })),
   setAccountsLoading: (loading: boolean) => set({ accountsLoading: loading }),
+  setEssentialDataLoading: (loading: boolean) =>
+    set({ essentialDataLoading: loading }),
   clearCache: () => set({ cache: {} }),
 }));
 

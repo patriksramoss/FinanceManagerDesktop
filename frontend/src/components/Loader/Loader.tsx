@@ -9,10 +9,7 @@ const Loader: React.FC<LoaderProps> = ({ loading }) => {
   if (loading)
     return (
       <div className="flex w-full h-full justify-center items-center">
-        <div
-          className="w-12 h-12 bg-center bg-no-repeat bg-contain"
-          style={{ backgroundImage: `url(${loaderSvg})` }}
-        />
+        <img src={loaderSvg} alt="loading" className="w-12 h-12" />
       </div>
     );
 };

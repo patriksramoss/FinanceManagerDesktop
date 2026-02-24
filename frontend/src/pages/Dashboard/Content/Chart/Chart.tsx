@@ -1,5 +1,4 @@
-import { useState, useMemo } from "react";
-import styles from "./Chart.module.scss";
+import { useMemo } from "react";
 import {
   PieChart,
   Pie,
@@ -28,33 +27,29 @@ const COLORS = [
 ];
 
 const Chart = () => {
-  const [loadingChartData] = useState<boolean>(false);
-  const cache = usePlaidStore((s) => s.cache);
-  const selectedMonth = usePlaidStore((s) => s.selectedMonthDashboard);
-  const selectedAccount = usePlaidStore((s) => s.selectedAccountDashboard);
-  const selectedCategory = usePlaidStore((s) => s.selectedCategoryDashboard);
+  const {
+    cache,
+    selectedMonthDashboard: selectedMonth,
+    selectedAccountDashboard: selectedAccount,
+    selectedCategoryDashboard: selectedCategory,
+  } = usePlaidStore();
 
-  const essentialData = useMemo(() => {
-    const month = selectedMonth ?? dayjs().format("YYYY-MM");
-    return getFilteredEssentialData(
-      cache[month],
-      selectedAccount,
-      selectedCategory,
-    );
-  }, [cache, selectedMonth, selectedAccount, selectedCategory]);
+  const month = selectedMonth ?? dayjs().format("YYYY-MM");
 
-  const categorizedData = useMemo(() => {
-    return processCategoryData(
-      essentialData?.transactions ?? [],
-      selectedMonth,
-    );
-  }, [essentialData, selectedMonth]);
+  const essentialData = useMemo(
+    () =>
+      getFilteredEssentialData(cache[month], selectedAccount, selectedCategory),
+    [cache, month, selectedAccount, selectedCategory],
+  );
+
+  const categorizedData = useMemo(
+    () => processCategoryData(essentialData?.transactions ?? [], month),
+    [essentialData],
+  );
 
   return (
     <div className="flex flex-col items-center justify-center p-5 mx-4 rounded-lg border border-gray-300 bg-white h-[700px] relative">
       {!essentialData ? (
-        <Loader loading={true} />
-      ) : loadingChartData ? (
         <div className="w-full h-[400px] flex items-center justify-center relative top-12">
           <Loader loading />
         </div>
