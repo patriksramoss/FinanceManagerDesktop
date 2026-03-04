@@ -47,15 +47,13 @@ const Chart = () => {
     [essentialData],
   );
 
+  const emptyData = [{ name: "No Data", value: 1 }];
+
   return (
-    <div className="flex flex-col items-center justify-center p-5 mx-4 rounded-lg border border-gray-300 bg-white h-[700px] relative">
+    <div className="flex flex-col items-center justify-center p-5 rounded-lg border border-gray-300 bg-white h-[700px] relative">
       {!essentialData ? (
-        <div className="w-full h-[400px] flex items-center justify-center relative top-12">
-          <Loader loading />
-        </div>
-      ) : essentialData.transactions.length === 0 ? (
-        <div className="w-full h-[400px] flex items-center justify-center text-gray-500">
-          No Data
+        <div className="w-full h-full flex items-center justify-center relative top-0">
+          <Loader loading size={9} />
         </div>
       ) : (
         <div className="w-full h-[400px]">
@@ -64,7 +62,11 @@ const Chart = () => {
               <Pie
                 innerRadius={80}
                 outerRadius={160}
-                data={categorizedData}
+                data={
+                  essentialData.transactions.length === 0
+                    ? emptyData
+                    : categorizedData
+                }
                 dataKey="value"
                 nameKey="name"
                 cx="50%"

@@ -34,25 +34,20 @@ const App: React.FC = () => {
   const lenis = new Lenis({
     autoRaf: true,
   });
-
-  console.log("Using Lenis!", lenis);
+  lenis;
 
   return (
     <>
       {isAuthenticated && <Navbar onLogout={handleLogout} />}
       <Routes>
         <Route path="/" element={isAuthenticated ? <Dashboard /> : <Auth />} />
-      </Routes>
-      {isAuthenticated && (
-        <>
-          <Routes>
+        {isAuthenticated && (
+          <>
             <Route path="/dashboard" element={<Dashboard />} />
-          </Routes>
-          <Routes>
             <Route path="/reports" element={<Reports />} />
-          </Routes>
-        </>
-      )}
+          </>
+        )}
+      </Routes>
     </>
   );
 };

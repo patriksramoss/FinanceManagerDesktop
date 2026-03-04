@@ -31,11 +31,11 @@ const Dashboard: React.FC = () => {
         <Header />
       </div>
       <div className="flex flex-row justify-between w-full gap-4 max-[1050px]:flex-col-reverse">
-        <div className="flex flex-col gap-2 w-[30%] max-[1050px]:w-full">
+        <div className="flex flex-col gap-2 w-[40%] max-[1050px]:w-full">
           <SummaryRow />
           <MiniCalendar />
         </div>
-        <div className="flex flex-col gap-8 w-[70%] max-[1050px]:w-full">
+        <div className="flex flex-col gap-8 w-[60%] max-[1050px]:w-full">
           <Chart />
         </div>
       </div>

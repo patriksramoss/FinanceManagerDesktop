@@ -1,81 +1,75 @@
 import * as React from "react";
 import { format } from "date-fns";
-import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-
-type DayData = {
-  income: number;
-  expense: number;
-  notes?: string;
-};
-
-type AmountMap = Record<string, DayData>;
+import { PlaidTransaction } from "src/api/plaid/types";
 
 interface MiniCalendarFormProps {
-  selectedDate: Date | undefined;
-  dayData: AmountMap;
-  setDayData: React.Dispatch<React.SetStateAction<AmountMap>>;
+  selectedDate: Date;
+  transactions: PlaidTransaction[];
+  notes: string;
+  setNotes: (value: string) => void;
+  categorizedData: { name: string }[]; // same order as chart
 }
+
+const COLORS = [
+  "#8884d8",
+  "#82ca9d",
+  "#ffc658",
+  "#ff7f50",
+  "#8dd1e1",
+  "#d0ed57",
+  "#a4de6c",
+  "#d88884",
+];
 
 export const MiniCalendarForm: React.FC<MiniCalendarFormProps> = ({
   selectedDate,
-  dayData,
-  setDayData,
+  transactions,
+  notes,
+  setNotes,
+  categorizedData,
 }) => {
-  if (!selectedDate) return null;
-
-  const key = format(selectedDate, "yyyy-MM-dd");
+  const getCategoryColor = (categoryName: string) => {
+    const index = categorizedData.findIndex((c) => c.name === categoryName);
+    return COLORS[index % COLORS.length] || "#ccc";
+  };
 
   return (
-    <div className=" space-y-2 p-2 border border-gray-300 rounded-xl w-full bg-white">
+    <div className="space-y-2 p-2 border border-gray-300 rounded-xl w-full bg-white">
       <div className="text-sm font-medium">
         {format(selectedDate, "MMM d, yyyy")}
       </div>
 
-      <div className="flex gap-2">
-        <div className="flex flex-col">
-          <label className="text-xs text-muted-foreground mb-1">Income</label>
-          <Input
-            type="number"
-            value={dayData[key]?.income ?? 0}
-            onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-              setDayData((prev) => ({
-                ...prev,
-                [key]: {
-                  ...prev[key],
-                  income: Number(e.target.value) || 0,
-                },
-              }))
-            }
-          />
-        </div>
-        <div className="flex flex-col">
-          <label className="text-xs text-muted-foreground mb-1">Expense</label>
-          <Input
-            type="number"
-            value={dayData[key]?.expense ?? 0}
-            onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-              setDayData((prev) => ({
-                ...prev,
-                [key]: {
-                  ...prev[key],
-                  expense: Number(e.target.value) || 0,
-                },
-              }))
-            }
-          />
-        </div>
-      </div>
+      {transactions.length > 0 ? (
+        <ul className="text-sm list-disc pl-4 space-y-1">
+          {transactions.map((t) => {
+            const category =
+              t.personal_finance_category?.detailed ??
+              t.personal_finance_category?.primary ??
+              "Uncategorized";
+            const color = getCategoryColor(category);
+
+            return (
+              <li key={t.transaction_id} className="flex items-center gap-2">
+                <span
+                  className="w-3 h-3 rounded-full flex-shrink-0"
+                  style={{ backgroundColor: color }}
+                />
+                <span>
+                  {t.name} — €{t.amount.toFixed(2)} ({category})
+                </span>
+              </li>
+            );
+          })}
+        </ul>
+      ) : (
+        <div className="text-sm text-muted-foreground">No transactions</div>
+      )}
 
       <Textarea
         placeholder="Notes"
-        value={dayData[key]?.notes ?? ""}
-        onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) =>
-          setDayData((prev) => ({
-            ...prev,
-            [key]: { ...prev[key], notes: e.target.value },
-          }))
-        }
+        value={notes}
+        onChange={(e) => setNotes(e.target.value)}
         className="w-full"
       />
     </div>

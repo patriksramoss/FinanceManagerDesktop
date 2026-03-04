@@ -25,14 +25,11 @@ const Reports: React.FC = () => {
     <div className="flex flex-col items-center justify-start p-5 m-4 relative rounded-lg top-12">
       {!essentialData ? (
         <div className="flex justify-between w-4/5">
-          <div className="p-5 m-4 w-full relative bg-gray-100 rounded-lg shadow-md">
-            <Loader loading={true} />
-          </div>
+          <Loader loading={true} />
         </div>
       ) : (
         <div className="flex justify-between w-4/5">
-          <div className="p-5 m-4 w-full relative bg-gray-100 rounded-lg shadow-md">
-            <h3 className="text-lg mt-5 text-gray-800">Accounts</h3>
+          <div className="p-5 m-4 w-full relative rounded-lg ">
             <div className="flex flex-col gap-2 mt-3">
               {accounts.map((account: any) => (
                 <div
