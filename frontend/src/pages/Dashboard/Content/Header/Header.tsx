@@ -70,7 +70,7 @@ const Header = () => {
         </div>
       </div>
 
-      <div className="flex flex-row h-8 gap-2 w-full sm:w-auto mt-2 sm:mt-0">
+      <div className="flex flex-row rounded-md h-8 gap-2 w-full sm:w-auto mt-2 sm:mt-0">
         <SelectField
           label="Account"
           value={selectedAccount ?? "all"}

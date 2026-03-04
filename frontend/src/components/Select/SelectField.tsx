@@ -33,7 +33,7 @@ export function SelectField({ label, value, onChange, options }: Props) {
         {label}
       </div>
       <div
-        className="flex-1 px-3 bg-white/50 backdrop-blur-md cursor-pointer text-left text-xs flex items-center w-[20rem] truncate text-text"
+        className="flex-1 px-3 rounded-md bg-white/50 backdrop-blur-md cursor-pointer text-left text-xs flex items-center w-[20rem] truncate text-text"
         onClick={() => setOpen((o) => !o)}
       >
         {selectedLabel}
