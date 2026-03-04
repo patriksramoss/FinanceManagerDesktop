@@ -5,39 +5,55 @@ const backendUrl = import.meta.env.VITE_BACKEND_URL;
 export const plaidController = {
   async getEssentialData(month: string) {
     const store = usePlaidStore.getState();
-    const cached = store.getEssentialData(month);
-    if (cached) return cached;
-    const token = await getCachedAccessToken();
-    if (!token) throw new Error("Missing access token");
-    const response = await fetch(`${backendUrl}/api/plaid/get-essential-data`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify({
-        access_token: token,
-        month: month,
-      }),
-    });
+    store.setEssentialDataLoading(true);
 
-    if (!response.ok) throw new Error(`Status ${response.status}`);
-    const data: EssentialData = await response.json();
-    const completedTransactions = data.transactions.filter((t) => !t.pending);
-    const allTransactionSum = Number(
-      completedTransactions.reduce((sum, t) => sum + t.amount, 0).toFixed(2)
-    );
-    const enrichedData: EssentialData & {
-      dashboard: { allTransactionSum: number };
-    } = {
-      ...data,
-      dashboard: {
-        allTransactionSum,
-      },
-    };
+    try {
+      const cached = store.getEssentialData(month);
+      if (cached) return cached;
 
-    store.setEssentialData(month, enrichedData);
-    return enrichedData;
+      const token = await getCachedAccessToken();
+      if (!token) throw new Error("Missing access token");
+
+      const response = await fetch(
+        `${backendUrl}/api/plaid/get-essential-data`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({
+            access_token: token,
+            month,
+          }),
+        },
+      );
+
+      if (!response.ok) {
+        throw new Error(`Status ${response.status}`);
+      }
+
+      const data: EssentialData = await response.json();
+
+      const completedTransactions = data.transactions.filter((t) => !t.pending);
+
+      const allTransactionSum = Number(
+        completedTransactions.reduce((sum, t) => sum + t.amount, 0).toFixed(2),
+      );
+
+      const enrichedData: EssentialData & {
+        dashboard: { allTransactionSum: number };
+      } = {
+        ...data,
+        dashboard: { allTransactionSum },
+      };
+
+      store.setEssentialData(month, enrichedData);
+
+      return enrichedData;
+    } finally {
+      store.setEssentialDataLoading(false);
+    }
   },
 
   async getAccounts() {

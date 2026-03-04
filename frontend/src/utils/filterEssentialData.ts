@@ -6,7 +6,6 @@ export function getFilteredEssentialData(
   category: string | null,
 ): EssentialData | undefined {
   if (!monthData) return undefined;
-
   const isAccountFiltered = account && account !== "all";
   const isCategoryFiltered = category && category !== "all";
 

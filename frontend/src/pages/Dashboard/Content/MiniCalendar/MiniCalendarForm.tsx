@@ -27,7 +27,7 @@ export const MiniCalendarForm: React.FC<MiniCalendarFormProps> = ({
   const key = format(selectedDate, "yyyy-MM-dd");
 
   return (
-    <div className=" space-y-2 p-2 border rounded-xl w-full bg-white">
+    <div className=" space-y-2 p-2 border border-gray-300 rounded-xl w-full bg-white">
       <div className="text-sm font-medium">
         {format(selectedDate, "MMM d, yyyy")}
       </div>
