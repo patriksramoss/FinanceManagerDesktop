@@ -2,13 +2,15 @@ import * as React from "react";
 import { format } from "date-fns";
 import { Textarea } from "@/components/ui/textarea";
 import { PlaidTransaction } from "src/api/plaid/types";
+//icons
+import { ArrowUp, ArrowDown } from "lucide-react";
 
 interface MiniCalendarFormProps {
   selectedDate: Date;
   transactions: PlaidTransaction[];
   notes: string;
   setNotes: (value: string) => void;
-  categorizedData: { name: string }[]; // same order as chart
+  categorizedData: { name: string }[];
 }
 
 const COLORS = [
@@ -41,22 +43,31 @@ export const MiniCalendarForm: React.FC<MiniCalendarFormProps> = ({
       </div>
 
       {transactions.length > 0 ? (
-        <ul className="text-sm list-disc pl-4 space-y-1">
+        <ul className="text-sm list-disc p-4 space-y-1 break-words">
           {transactions.map((t) => {
             const category =
               t.personal_finance_category?.detailed ??
               t.personal_finance_category?.primary ??
               "Uncategorized";
             const color = getCategoryColor(category);
+            const amount = Number(t.amount);
 
             return (
-              <li key={t.transaction_id} className="flex items-center gap-2">
+              <li
+                key={t.transaction_id}
+                className="flex items-center gap-2 w-full break-all"
+              >
                 <span
-                  className="w-3 h-3 rounded-full flex-shrink-0"
-                  style={{ backgroundColor: color }}
-                />
+                  className={`text-xs font-bold ${amount > 0 ? "text-red-500" : "text-green-500"}`}
+                >
+                  {amount > 0 ? (
+                    <ArrowDown className="w-3 h-3" size={22} strokeWidth={4} />
+                  ) : (
+                    <ArrowUp className="w-3 h-3" size={22} strokeWidth={4} />
+                  )}
+                </span>
                 <span>
-                  {t.name} — €{t.amount.toFixed(2)} ({category})
+                  {t.name} — €{Math.abs(amount).toFixed(2)} ({category})
                 </span>
               </li>
             );

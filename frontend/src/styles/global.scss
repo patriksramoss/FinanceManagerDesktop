@@ -42,6 +42,10 @@ textarea {
   -ms-user-select: text;
 }
 
+.hover-scale {
+  @apply transform transition-transform duration-300 ease-smooth hover:scale-125;
+}
+
 @layer base {
   a,
   img,

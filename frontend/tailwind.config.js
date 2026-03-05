@@ -39,6 +39,7 @@ module.exports = {
         accent:
           "linear-gradient(90deg, rgb(254,38,92), #e73e3e, rgb(221,49,49))",
         accentDark: "linear-gradient(90deg, #8825255d, #8825255d, #8825255d)",
+        red: "linear-gradient(90deg, #eb0e0eda, #eb0e0eda, #eb0e0eda)",
         danger: "linear-gradient(90deg, #fe5d26ff, #e73e3e, rgb(221,112,49))",
         "danger-2":
           "linear-gradient(90deg, rgb(254,63,38), #e71d1d, rgb(243,69,26))",
@@ -47,9 +48,12 @@ module.exports = {
           "linear-gradient(90deg, rgba(255,255,255,0.6), rgba(249,250,251,0.6), rgba(240,242,245,0.6))",
         bg3: "linear-gradient(to right, #ff5526, #e7422c)",
         bg2: "linear-gradient(90deg, #f0f2f5, #e7eaee, #dee2e7)",
-        light: "linear-gradient(90deg, #f7f7f7, #f7f7f7, #f7f7f7)",
+        lightGray: "linear-gradient(90deg, #cacaca, #d3d3d3, #d6d6d6)",
         "bg2-06":
           "linear-gradient(90deg, rgba(240,242,245,0.6), rgba(231,234,238,0.6), rgba(222,226,231,0.6))",
+      },
+      transitionTimingFunction: {
+        smooth: "cubic-bezier(0.22,1,0.36,1)",
       },
     },
   },

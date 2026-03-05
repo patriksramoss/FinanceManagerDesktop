@@ -52,7 +52,7 @@ const Header = () => {
         >
           <button
             onClick={() => changeMonth("prev")}
-            className="bg-transparent border-none text-text text-xl w-9 h-9 flex items-center justify-center rounded-full transition-colors hover:bg-white/20 hover:text-accentSolid focus:outline-2 focus:outline-offset-2 focus:outline-blue-300"
+            className="bg-transparent border-none text-text text-xl w-9 h-9 flex items-center justify-center rounded-full transition-colors hover:bg-white/20 hover:text-accentSolid focus:outline-2 focus:outline-offset-2 focus:outline-blue-300 hover-scale"
           >
             <FaArrowAltCircleLeft />
           </button>
@@ -63,7 +63,7 @@ const Header = () => {
 
           <button
             onClick={() => changeMonth("next")}
-            className="bg-transparent border-none text-text text-xl w-9 h-9 flex items-center justify-center rounded-full transition-colors hover:bg-white/20 hover:text-accentSolid focus:outline-2 focus:outline-offset-2 focus:outline-blue-300"
+            className="bg-transparent border-none text-text text-xl w-9 h-9 flex items-center justify-center rounded-full transition-colors hover:bg-white/20 hover:text-accentSolid focus:outline-2 focus:outline-offset-2 focus:outline-blue-300 hover-scale"
           >
             <FaArrowAltCircleRight />
           </button>

@@ -32,8 +32,6 @@ const PlaidLinkButton: React.FC<PlaidLinkButtonProps> = ({ onSuccess }) => {
       public_token: string,
       metadata: PlaidLinkOnSuccessMetadata,
     ) => {
-      console.log("Public Token:", public_token);
-      console.log("Metadata:", metadata);
       try {
         const accessToken = await getAccessToken(public_token);
         onSuccess(accessToken, metadata);
@@ -60,12 +58,6 @@ const PlaidLinkButton: React.FC<PlaidLinkButtonProps> = ({ onSuccess }) => {
     const fetchLinkToken = async () => {
       setLoading(true);
       setFetchError(null);
-
-      console.log(
-        "BACKEND URL FETCH LINK TOKEN",
-        `${backendUrl}/api/plaid/create-link-token`,
-      );
-
       try {
         const response = await fetch(
           `${backendUrl}/api/plaid/create-link-token`,

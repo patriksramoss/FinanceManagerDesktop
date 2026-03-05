@@ -3,7 +3,7 @@ require("dotenv").config({ path: "../backend/.env", override: true });
 import { app, BrowserWindow, ipcMain } from "electron";
 import path from "path";
 import url from "url";
-import store from "./storage"; // <- You’ll create this file
+import store from "./storage";
 import fs from "fs";
 
 let mainWindow: BrowserWindow | null;
