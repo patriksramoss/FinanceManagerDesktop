@@ -67,7 +67,8 @@ export const MiniCalendarForm: React.FC<MiniCalendarFormProps> = ({
                   )}
                 </span>
                 <span>
-                  {t.name} — €{Math.abs(amount).toFixed(2)} ({category})
+                  {t.name} — €{Math.abs(amount).toFixed(2)}{" "}
+                  <span style={{ color }}>({category})</span>
                 </span>
               </li>
             );
